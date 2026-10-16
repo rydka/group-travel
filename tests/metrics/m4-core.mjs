@@ -102,8 +102,8 @@ function runVoyage(v) {
   check(v.id, "tierAfter", tier.id, x.tierAfter);
   for (const [id, want] of Object.entries(x.fatigueDc)) {
     const base = stageDc({ stageDc: v.stage.dc, tierDc: tier.dc, pace: v.pace, paceRules: PACE_RULES }).dc;
-    const noFood = (plan.intake[id] ?? []).some((d) => d.food < v.stage.foodPerDay);
-    check(v.id, `fatigueDc.${id}`, base + (noFood ? 5 : 0), want);
+    const short = (plan.intake[id] ?? []).some((d) => d.food < v.stage.foodPerDay || d.water < v.stage.waterPerDay * PINTS_PER_WATER_RATION);
+    check(v.id, `fatigueDc.${id}`, base + (short ? 5 : 0), want);
   }
 }
 

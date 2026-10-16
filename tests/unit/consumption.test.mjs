@@ -179,6 +179,3 @@ describe("planRemoval (event losses)", () => {
   });
 });
 
-describe("fatigue DC penalty without rations (answers Q2)", () => {
-  it.todo("a member who got no rations rolls the fatigue save at DC + 5, once per stage (no function carries it in the design signatures: see the report)");
-});

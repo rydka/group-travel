@@ -47,6 +47,24 @@ describe("stageDc (C7b, C11)", () => {
   });
 });
 
+describe("stageDc shortage penalty (answers Q2: +5 once)", () => {
+  const base = { stageDc: null, tierDc: 10, pace: "normal", paceRules: P };
+  it("adds 5 when the member lacked food or water on at least one day", () => {
+    expect(stageDc({ ...base, shortage: true }).dc).toBe(15);
+  });
+  it("adds nothing without shortage", () => {
+    expect(stageDc({ ...base, shortage: false }).dc).toBe(10);
+    expect(stageDc(base).dc).toBe(10);
+  });
+  it("combines with the pace and a stage DC", () => {
+    expect(stageDc({ ...base, stageDc: 12, pace: "fast", shortage: true }).dc).toBe(19);
+    expect(stageDc({ ...base, pace: "slow", shortage: true }).dc).toBe(13);
+  });
+  it("is a flat +5, not per day", () => {
+    expect(stageDc({ ...base, shortage: true }).dc - stageDc(base).dc).toBe(5);
+  });
+});
+
 describe("forcedMarchChecks (C11b)", () => {
   it("no check up to 8 hours", () => {
     expect(forcedMarchChecks(8, 3)).toEqual([]);

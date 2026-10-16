@@ -73,6 +73,33 @@ describe("dailyPrivation, 2024 (modern)", () => {
     expect(r.counter).toBe(0);
   });
 
+  it("food: eating nothing means no save at all on days 1 to 4 (rules note 6.1)", () => {
+    for (let counter = 0; counter < 4; counter++) {
+      const r = day("modern", 0, 1, counter);
+      expect(of(r, "food")).toEqual([]);
+      expect(r.counter).toBe(counter + 1);
+      expect(r.statuses.malnutrition).toBe(false);
+    }
+  });
+
+  it("food: the 5th consecutive day without food adds a level and sets malnutrition", () => {
+    const r = day("modern", 0, 1, 4);
+    expect(of(r, "food")[0]).toMatchObject({ type: "auto", levels: 1 });
+    expect(r.statuses.malnutrition).toBe(true);
+  });
+
+  it("food: eating something resets the counter, even a little", () => {
+    const r = dailyPrivation({ rulesVersion: "modern", food: { need: 4, got: 1 }, water: { need: 1, got: 1 }, counter: 4, conMod: 0 });
+    expect(r.counter).toBe(0);
+    expect(of(r, "food")[0]).toMatchObject({ type: "save", dc: 10 });
+    expect(r.statuses.malnutrition).toBe(false); // set only when a level is actually added
+  });
+
+  it("statuses are false on a day with no level added", () => {
+    expect(day("modern", 1, 1, 2).statuses).toEqual({ malnutrition: false, dehydration: false });
+    expect(day("legacy", 0, 1, 0).statuses.malnutrition).toBe(false);
+  });
+
   it("food: no automatic level before the 5th day without food", () => {
     const r = day("modern", 0, 1, 3, 4);
     expect(r.counter).toBe(4);
