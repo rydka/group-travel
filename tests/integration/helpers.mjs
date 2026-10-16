@@ -142,7 +142,7 @@ export async function ensurePlayer(page, { name, groupId, actorIds = [] }) {
 
 /** Open a second browser context logged in as the given user. */
 export async function joinAs(browser, baseURL, name) {
-  const context = await browser.newContext({ baseURL, viewport: { width: 1600, height: 900 } });
+  const context = await browser.newContext({ baseURL, viewport: { width: 1600, height: 900 }, storageState: { cookies: [], origins: [] } });
   await context.addInitScript(() => localStorage.setItem("core.noCanvas", "true"));
   const page = await context.newPage();
   await page.goto("/join");
