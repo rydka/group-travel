@@ -18,6 +18,9 @@ Foundry v14, dnd5e 6.x. Toute API utilisée doit exister dans ces versions. Cons
 |---|---|
 | `module.json` | Manifeste. `version` est réécrite par le workflow de release. |
 | `scripts/main.mjs` | Point d'entrée : hooks `init` et `ready` |
+| `scripts/core/` | Calculs purs, sans `game` ni `foundry` (testés par Vitest). Unités : nourriture en rations, eau en **pintes** dans l'inventaire et `planConsumption().intake` (une ration d'eau = `water.pintsPerWaterRation` pintes, 4 par défaut) ; `dailyPrivation` reçoit des rations d'eau (conversion par la couche Foundry) |
+| `scripts/foundry/settings.mjs` | Réglages du monde (`DataField`), `getRules()` |
+| `scripts/foundry/apps/rules-config.mjs` | Menu « Règles » (ApplicationV2, classe construite à la demande pour rester importable sans Foundry) |
 | `styles/group-travel.css` | Styles, tous sous la classe `.group-travel` |
 | `lang/` | Traductions `en` et `fr`, clés sous `group-travel.*` |
 | `templates/` | Templates Handlebars |

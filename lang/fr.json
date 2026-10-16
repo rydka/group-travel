@@ -1,13 +1,138 @@
 {
   "group-travel": {
+    "Tab": { "Label": "Voyage" },
     "settings": {
-      "enabled": {
-        "name": "Activer Group Travel",
-        "hint": "Active ou désactive les fonctionnalités du module pour ce monde."
+      "enabled": { "name": "Activer Group Travel", "hint": "Ajoute l'onglet Voyage aux fiches de groupe dnd5e." },
+      "rules": {
+        "name": "Règles du voyage",
+        "label": "Configurer les règles",
+        "hint": "Valeurs de confort, paliers de confort par défaut, actions, allure, eau, reconnaissance des objets et règles officielles."
+      },
+      "comfort": { "name": "Valeurs de confort" },
+      "defaultTiers": { "name": "Paliers de confort par défaut" },
+      "actions": { "name": "Actions" },
+      "pace": { "name": "Allure" },
+      "water": { "name": "Eau" },
+      "shortage": { "name": "Pénurie" },
+      "recognition": { "name": "Reconnaissance des objets" },
+      "officialRules": { "name": "Règles officielles" },
+      "fatigueSave": { "name": "Jet de fatigue" },
+      "defaultTable": { "name": "Table d'événements par défaut" }
+    },
+    "Errors": {
+      "wrongSystem": "Group Travel nécessite le système dnd5e.",
+      "tiers": {
+        "empty": "Définissez au moins un palier de confort.",
+        "min": "Le minimum d'un palier n'est pas un nombre.",
+        "duplicate": "Deux paliers ont le même minimum.",
+        "floor": "Un palier doit être sans minimum (le plus bas).",
+        "dc": "Chaque palier doit avoir un DD numérique.",
+        "name": "Chaque palier doit avoir un nom."
+      },
+      "action": {
+        "invalid": "Action invalide.",
+        "id": "Chaque action doit avoir un identifiant.",
+        "label": "Chaque action doit avoir un nom.",
+        "dc": "Chaque action doit avoir un DD numérique.",
+        "check": "Choisissez le test de chaque action (un test de compétence demande une clé de compétence).",
+        "effect": "Effet d'action inconnu.",
+        "formula": "Les actions de nourriture et d'eau demandent une formule (par exemple 1d4).",
+        "value": "Une action de confort demande une valeur numérique.",
+        "duplicate": "Deux actions ont le même identifiant."
       }
     },
-    "errors": {
-      "wrongSystem": "Group Travel nécessite le système dnd5e."
+    "Warnings": {
+      "effects": {
+        "notList": "Les effets de ce résultat de table ne forment pas une liste : ils sont ignorés.",
+        "type": "Un effet de type inconnu a été ignoré.",
+        "amount": "Une perte de nourriture ou d'eau sans quantité valide a été ignorée.",
+        "damage": "Un effet de dégâts au matériel mal réglé a été ignoré.",
+        "value": "Un effet de confort sans valeur numérique a été ignoré."
+      }
+    },
+    "Tier": { "comfortable": "Confortable", "fair": "Correct", "rough": "Rude", "miserable": "Misérable" },
+    "Action": { "hunt": "Chasser et cueillir", "repair": "Réparer", "camp": "Aménager le camp", "guard": "Monter la garde" },
+    "Condition": { "intact": "Intact", "worn": "Usé", "damaged": "Abîmé", "destroyed": "Détruit" },
+    "Pace": { "fast": "Rapide", "normal": "Normale", "slow": "Lente" },
+    "Check": { "skill": "Compétence", "tool": "Outil", "ability": "Caractéristique" },
+    "Effect": {
+      "addFood": "Ajouter des rations",
+      "addWater": "Ajouter de l'eau",
+      "repair": "Réparer un objet",
+      "comfort": "Bonus de confort",
+      "guard": "Garde (réduit l'événement de moitié)"
+    },
+    "Category": { "food": "Rations", "water": "Eau", "shelter": "Abri", "bedding": "Couchage", "gear": "Autre matériel de campement" },
+    "Rules": {
+      "title": "Group Travel : règles",
+      "tabs": {
+        "comfort": "Confort",
+        "tiers": "Paliers",
+        "actions": "Actions",
+        "pace": "Allure et eau",
+        "recognition": "Reconnaissance",
+        "official": "Règles officielles"
+      },
+      "reset": "Valeurs par défaut",
+      "saved": "Règles du voyage enregistrées.",
+      "add": "Ajouter",
+      "delete": "Supprimer",
+      "comfort": {
+        "hint": "Règle maison. Confort = somme, sur les objets d'abri et de couchage, de la valeur de rareté × le coefficient d'état × la quantité, plus les modificateurs de l'étape, moins le malus de pénurie.",
+        "rarity": "Valeur par rareté (un objet sans rareté compte comme commun)",
+        "condition": "Coefficient par état",
+        "shortage": "Malus quand l'étape manque de"
+      },
+      "tiers": {
+        "hint": "Copiés dans chaque nouveau voyage, où ils restent modifiables. Un palier s'applique à partir de son score minimum ; le palier le plus bas n'a pas de minimum.",
+        "name": "Nom",
+        "min": "Score minimum",
+        "dc": "DD de fatigue",
+        "floor": "aucun (le plus bas)"
+      },
+      "actions": {
+        "hint": "Une action par personnage et par étape. Un test d'outil sans clé d'outil devient un test de la caractéristique indiquée.",
+        "label": "Nom",
+        "check": "Test",
+        "key": "clé de compétence ou d'outil",
+        "ability": "caractéristique (int, wis…)",
+        "dc": "DD",
+        "effect": "Effet en cas de réussite",
+        "formula": "formule",
+        "value": "valeur",
+        "steps": "crans"
+      },
+      "pace": {
+        "legend": "Allure",
+        "duration": "Variation de durée (%)",
+        "dc": "Modificateur du DD de fatigue",
+        "hint": "Rapide : étape plus courte, DD plus élevé. Lente : étape plus longue, DD plus bas. La durée est arrondie au jour supérieur."
+      },
+      "water": {
+        "legend": "Eau",
+        "pints": "Pintes par ration d'eau",
+        "hint": "Une ration d'eau couvre un membre pour une journée. Une outre pleine contient 4 pintes."
+      },
+      "fatigue": {
+        "legend": "Jet de fatigue (règle maison)",
+        "enabled": "Jet de sauvegarde de Constitution à la fin de chaque étape",
+        "shortage": "Hausse du DD en cas de manque de nourriture ou d'eau",
+        "hint": "Un membre qui n'a pas eu une journée complète de nourriture ou d'eau pendant l'étape subit cette hausse une fois, sur le jet de fatigue de l'étape."
+      },
+      "recognition": {
+        "hint": "Les objets sont reconnus d'abord par leur identifiant dnd5e, puis par leur nom (casse et accents ignorés). Séparez les valeurs par des points-virgules.",
+        "category": "Catégorie",
+        "portions": "Portions par utilisation (rations ou pintes)",
+        "identifiers": "Identifiants",
+        "names": "Noms"
+      },
+      "official": {
+        "forcedMarch": "Marche forcée",
+        "forcedMarchHint": "Règle officielle : un jet de sauvegarde de Constitution par heure de marche au-delà de 8 heures dans la journée, DD 10 + heures en trop ; un échec donne un niveau d'épuisement.",
+        "privation": "Privation officielle (nourriture et eau)",
+        "privationHint": "Désactivée par défaut. Applique jour par jour les règles de nourriture et d'eau de l'édition choisie dans dnd5e (2014 ou 2024), puis pose et retire les états Malnutrition et Déshydratation.",
+        "table": "Table d'événements par défaut (UUID)"
+      }
     }
   }
 }

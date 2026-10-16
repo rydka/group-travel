@@ -1,13 +1,138 @@
 {
   "group-travel": {
+    "Tab": { "Label": "Travel" },
     "settings": {
-      "enabled": {
-        "name": "Enable Group Travel",
-        "hint": "Turn the module's features on or off for this world."
+      "enabled": { "name": "Enable Group Travel", "hint": "Adds the Travel tab to dnd5e group sheets." },
+      "rules": {
+        "name": "Travel rules",
+        "label": "Configure rules",
+        "hint": "Comfort values, default comfort tiers, actions, pace, water, item recognition and official rules."
+      },
+      "comfort": { "name": "Comfort values" },
+      "defaultTiers": { "name": "Default comfort tiers" },
+      "actions": { "name": "Actions" },
+      "pace": { "name": "Pace" },
+      "water": { "name": "Water" },
+      "shortage": { "name": "Shortage" },
+      "recognition": { "name": "Item recognition" },
+      "officialRules": { "name": "Official rules" },
+      "fatigueSave": { "name": "Fatigue save" },
+      "defaultTable": { "name": "Default event table" }
+    },
+    "Errors": {
+      "wrongSystem": "Group Travel requires the dnd5e system.",
+      "tiers": {
+        "empty": "Define at least one comfort tier.",
+        "min": "A tier minimum is not a number.",
+        "duplicate": "Two tiers have the same minimum.",
+        "floor": "One tier must have no minimum (the lowest tier).",
+        "dc": "Every tier needs a numeric DC.",
+        "name": "Every tier needs a name."
+      },
+      "action": {
+        "invalid": "Invalid action.",
+        "id": "Every action needs an identifier.",
+        "label": "Every action needs a name.",
+        "dc": "Every action needs a numeric DC.",
+        "check": "Choose the check of every action (a skill check needs a skill key).",
+        "effect": "Unknown action effect.",
+        "formula": "Food and water actions need a formula (for example 1d4).",
+        "value": "A comfort action needs a numeric value.",
+        "duplicate": "Two actions have the same identifier."
       }
     },
-    "errors": {
-      "wrongSystem": "Group Travel requires the dnd5e system."
+    "Warnings": {
+      "effects": {
+        "notList": "The effects of this table result are not a list and were ignored.",
+        "type": "An effect of unknown type was ignored.",
+        "amount": "A food or water loss without a valid amount was ignored.",
+        "damage": "An item damage effect with invalid settings was ignored.",
+        "value": "A comfort effect without a numeric value was ignored."
+      }
+    },
+    "Tier": { "comfortable": "Comfortable", "fair": "Fair", "rough": "Rough", "miserable": "Miserable" },
+    "Action": { "hunt": "Hunt and forage", "repair": "Repair", "camp": "Set up camp", "guard": "Keep watch" },
+    "Condition": { "intact": "Intact", "worn": "Worn", "damaged": "Damaged", "destroyed": "Destroyed" },
+    "Pace": { "fast": "Fast", "normal": "Normal", "slow": "Slow" },
+    "Check": { "skill": "Skill", "tool": "Tool", "ability": "Ability" },
+    "Effect": {
+      "addFood": "Add rations",
+      "addWater": "Add water",
+      "repair": "Repair an item",
+      "comfort": "Comfort bonus",
+      "guard": "Guard (halves the event)"
+    },
+    "Category": { "food": "Rations", "water": "Water", "shelter": "Shelter", "bedding": "Bedding", "gear": "Other camp gear" },
+    "Rules": {
+      "title": "Group Travel: rules",
+      "tabs": {
+        "comfort": "Comfort",
+        "tiers": "Tiers",
+        "actions": "Actions",
+        "pace": "Pace and water",
+        "recognition": "Recognition",
+        "official": "Official rules"
+      },
+      "reset": "Reset to defaults",
+      "saved": "Travel rules saved.",
+      "add": "Add",
+      "delete": "Delete",
+      "comfort": {
+        "hint": "House rule. Comfort = sum over shelter and bedding items of rarity value × condition factor × quantity, plus stage modifiers, minus the shortage penalty.",
+        "rarity": "Value by rarity (an item without rarity counts as common)",
+        "condition": "Factor by condition",
+        "shortage": "Penalty when the stage is short of"
+      },
+      "tiers": {
+        "hint": "Copied into each new travel, where they can be edited. A tier applies from its minimum score; the lowest tier has no minimum.",
+        "name": "Name",
+        "min": "Minimum score",
+        "dc": "Fatigue DC",
+        "floor": "none (lowest)"
+      },
+      "actions": {
+        "hint": "One action per character and per stage. A tool check without a tool key becomes a check of the given ability.",
+        "label": "Name",
+        "check": "Check",
+        "key": "skill or tool key",
+        "ability": "ability (int, wis…)",
+        "dc": "DC",
+        "effect": "Effect on success",
+        "formula": "formula",
+        "value": "value",
+        "steps": "steps"
+      },
+      "pace": {
+        "legend": "Pace",
+        "duration": "Duration change (%)",
+        "dc": "Fatigue DC modifier",
+        "hint": "Fast: shorter stage, higher DC. Slow: longer stage, lower DC. The duration is rounded up to the next day."
+      },
+      "water": {
+        "legend": "Water",
+        "pints": "Pints per water ration",
+        "hint": "One water ration covers a member for one day. A full waterskin holds 4 pints."
+      },
+      "fatigue": {
+        "legend": "Fatigue save (house rule)",
+        "enabled": "Constitution save at the end of each stage",
+        "shortage": "DC increase when short of food or water",
+        "hint": "A member who did not get a full day of food or water during the stage gets this increase once on the stage's fatigue save."
+      },
+      "recognition": {
+        "hint": "Items are recognised by their dnd5e identifier first, then by name (case and accents ignored). Separate values with semicolons.",
+        "category": "Category",
+        "portions": "Portions per use (rations or pints)",
+        "identifiers": "Identifiers",
+        "names": "Names"
+      },
+      "official": {
+        "forcedMarch": "Forced march",
+        "forcedMarchHint": "Official rule: one Constitution save per hour of travel beyond 8 hours in a day, DC 10 + extra hours; a failure gives one level of exhaustion.",
+        "privation": "Official privation (food and water)",
+        "privationHint": "Off by default. Applies the food and water rules of the dnd5e rules version (2014 or 2024) day by day, and sets and removes the Malnutrition and Dehydration states.",
+        "table": "Default event table (UUID)"
+      }
     }
   }
 }

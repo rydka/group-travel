@@ -1,3 +1,32 @@
 /* Scope every rule under a module-specific class to avoid clashing with other modules. */
-.group-travel {
+
+/* Rules menu: tabs on top, scrolling body, fixed footer. */
+.group-travel.group-travel-rules {
+  max-height: calc(100vh - 80px);
+}
+.group-travel.group-travel-rules .window-content {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.group-travel.group-travel-rules .gt-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+.group-travel.group-travel-rules .form-footer {
+  flex: 0 0 auto;
+}
+.group-travel .gt-table {
+  width: 100%;
+}
+.group-travel .gt-table input {
+  width: 100%;
+}
+.group-travel .gt-row {
+  margin-bottom: 0.5rem;
+}
+.group-travel .gt-row .form-group > input[type="number"] {
+  flex: 0 0 5rem;
 }

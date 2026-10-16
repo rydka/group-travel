@@ -1,0 +1,177 @@
+<div class="gt-scroll">
+  {{!-- Comfort --}}
+  <section class="tab {{tabs.comfort.cssClass}}" data-tab="comfort" data-group="primary">
+    <p class="hint">{{localize "group-travel.Rules.comfort.hint"}}</p>
+    <fieldset>
+      <legend>{{localize "group-travel.Rules.comfort.rarity"}}</legend>
+      {{#each rarities as |r|}}
+      <div class="form-group">
+        <label>{{localize r.label}}</label>
+        <input type="number" name="comfort.rarityComfort.{{r.key}}" value="{{r.value}}" step="any">
+      </div>
+      {{/each}}
+    </fieldset>
+    <fieldset>
+      <legend>{{localize "group-travel.Rules.comfort.condition"}}</legend>
+      {{#each conditions as |c|}}
+      <div class="form-group">
+        <label>{{c.label}}</label>
+        <input type="number" name="comfort.conditionFactor.{{c.key}}" value="{{c.value}}" step="any" min="0">
+      </div>
+      {{/each}}
+    </fieldset>
+    <fieldset>
+      <legend>{{localize "group-travel.Rules.comfort.shortage"}}</legend>
+      <div class="form-group">
+        <label>{{localize "group-travel.Category.food"}}</label>
+        <input type="number" name="comfort.shortageMalus.food" value="{{rules.comfort.shortageMalus.food}}" step="any" min="0">
+      </div>
+      <div class="form-group">
+        <label>{{localize "group-travel.Category.water"}}</label>
+        <input type="number" name="comfort.shortageMalus.water" value="{{rules.comfort.shortageMalus.water}}" step="any" min="0">
+      </div>
+    </fieldset>
+  </section>
+
+  {{!-- Default tiers --}}
+  <section class="tab {{tabs.tiers.cssClass}}" data-tab="tiers" data-group="primary">
+    <p class="hint">{{localize "group-travel.Rules.tiers.hint"}}</p>
+    <table class="gt-table">
+      <thead><tr>
+        <th>{{localize "group-travel.Rules.tiers.name"}}</th>
+        <th>{{localize "group-travel.Rules.tiers.min"}}</th>
+        <th>{{localize "group-travel.Rules.tiers.dc"}}</th>
+        <th></th>
+      </tr></thead>
+      <tbody>
+        {{#each tiers as |t i|}}
+        <tr>
+          <td>
+            <input type="hidden" name="defaultTiers.{{i}}.id" value="{{t.id}}">
+            <input type="text" name="defaultTiers.{{i}}.name" value="{{t.name}}">
+          </td>
+          <td><input type="number" name="defaultTiers.{{i}}.min" value="{{t.minValue}}" step="any"
+            placeholder="{{localize "group-travel.Rules.tiers.floor"}}"></td>
+          <td><input type="number" name="defaultTiers.{{i}}.dc" value="{{t.dc}}" step="1"></td>
+          <td><button type="button" class="icon fa-solid fa-trash" data-action="deleteRow" data-list="defaultTiers" data-index="{{i}}"
+            data-tooltip aria-label="{{localize "group-travel.Rules.delete"}}"></button></td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    <button type="button" data-action="addRow" data-list="defaultTiers"><i class="fa-solid fa-plus" inert></i> {{localize "group-travel.Rules.add"}}</button>
+  </section>
+
+  {{!-- Actions --}}
+  <section class="tab {{tabs.actions.cssClass}}" data-tab="actions" data-group="primary">
+    <p class="hint">{{localize "group-travel.Rules.actions.hint"}}</p>
+    {{#each actions as |a i|}}
+    <fieldset class="gt-row">
+      <input type="hidden" name="actions.{{i}}.id" value="{{a.id}}">
+      <div class="form-group">
+        <label>{{localize "group-travel.Rules.actions.label"}}</label>
+        <input type="text" name="actions.{{i}}.label" value="{{localize a.label}}">
+        <button type="button" class="icon fa-solid fa-trash" data-action="deleteRow" data-list="actions" data-index="{{i}}"
+          data-tooltip aria-label="{{localize "group-travel.Rules.delete"}}"></button>
+      </div>
+      <div class="form-group">
+        <label>{{localize "group-travel.Rules.actions.check"}}</label>
+        <select name="actions.{{i}}.check.type">{{selectOptions @root.checkTypes selected=a.check.type}}</select>
+        <input type="text" name="actions.{{i}}.check.key" value="{{a.check.key}}" placeholder="{{localize "group-travel.Rules.actions.key"}}">
+        <input type="text" name="actions.{{i}}.check.ability" value="{{a.check.ability}}" placeholder="{{localize "group-travel.Rules.actions.ability"}}">
+        <input type="number" name="actions.{{i}}.dc" value="{{a.dc}}" step="1" data-tooltip aria-label="{{localize "group-travel.Rules.actions.dc"}}">
+      </div>
+      <div class="form-group">
+        <label>{{localize "group-travel.Rules.actions.effect"}}</label>
+        <select name="actions.{{i}}.effect.type">{{selectOptions @root.effectTypes selected=a.effect.type}}</select>
+        <input type="text" name="actions.{{i}}.effect.formula" value="{{a.effect.formula}}" placeholder="{{localize "group-travel.Rules.actions.formula"}}">
+        <input type="number" name="actions.{{i}}.effect.value" value="{{a.effect.value}}" step="any" placeholder="{{localize "group-travel.Rules.actions.value"}}">
+        <input type="number" name="actions.{{i}}.effect.steps" value="{{a.effect.steps}}" step="1" min="1" placeholder="{{localize "group-travel.Rules.actions.steps"}}">
+      </div>
+    </fieldset>
+    {{/each}}
+    <button type="button" data-action="addRow" data-list="actions"><i class="fa-solid fa-plus" inert></i> {{localize "group-travel.Rules.add"}}</button>
+  </section>
+
+  {{!-- Pace, water, shortage --}}
+  <section class="tab {{tabs.pace.cssClass}}" data-tab="pace" data-group="primary">
+    <fieldset>
+      <legend>{{localize "group-travel.Rules.pace.legend"}}</legend>
+      {{#each paces as |p|}}
+      <div class="form-group">
+        <label>{{p.label}}</label>
+        <input type="number" name="pace.{{p.key}}.durationPct" value="{{p.durationPct}}" step="1"
+          data-tooltip aria-label="{{localize "group-travel.Rules.pace.duration"}}">
+        <input type="number" name="pace.{{p.key}}.dcMod" value="{{p.dcMod}}" step="1"
+          data-tooltip aria-label="{{localize "group-travel.Rules.pace.dc"}}">
+      </div>
+      {{/each}}
+      <p class="hint">{{localize "group-travel.Rules.pace.hint"}}</p>
+    </fieldset>
+    <fieldset>
+      <legend>{{localize "group-travel.Rules.water.legend"}}</legend>
+      <div class="form-group">
+        <label>{{localize "group-travel.Rules.water.pints"}}</label>
+        <input type="number" name="water.pintsPerWaterRation" value="{{rules.water.pintsPerWaterRation}}" step="1" min="1">
+      </div>
+      <p class="hint">{{localize "group-travel.Rules.water.hint"}}</p>
+    </fieldset>
+    <fieldset>
+      <legend>{{localize "group-travel.Rules.fatigue.legend"}}</legend>
+      <div class="form-group">
+        <label>{{localize "group-travel.Rules.fatigue.enabled"}}</label>
+        <input type="checkbox" name="fatigueSave" {{checked rules.fatigueSave}}>
+      </div>
+      <div class="form-group">
+        <label>{{localize "group-travel.Rules.fatigue.shortage"}}</label>
+        <input type="number" name="shortage.dcPenalty" value="{{rules.shortage.dcPenalty}}" step="1" min="0">
+      </div>
+      <p class="hint">{{localize "group-travel.Rules.fatigue.hint"}}</p>
+    </fieldset>
+  </section>
+
+  {{!-- Recognition --}}
+  <section class="tab {{tabs.recognition.cssClass}}" data-tab="recognition" data-group="primary">
+    <p class="hint">{{localize "group-travel.Rules.recognition.hint"}}</p>
+    {{#each recognition as |e i|}}
+    <fieldset class="gt-row">
+      <input type="hidden" name="recognition.{{i}}.key" value="{{e.key}}">
+      <div class="form-group">
+        <label>{{localize "group-travel.Rules.recognition.category"}}</label>
+        <select name="recognition.{{i}}.category">{{selectOptions @root.categories selected=e.category}}</select>
+        <input type="number" name="recognition.{{i}}.portionsPerUse" value="{{e.portionsPerUse}}" step="any" min="0"
+          data-tooltip aria-label="{{localize "group-travel.Rules.recognition.portions"}}">
+        <button type="button" class="icon fa-solid fa-trash" data-action="deleteRow" data-list="recognition" data-index="{{i}}"
+          data-tooltip aria-label="{{localize "group-travel.Rules.delete"}}"></button>
+      </div>
+      <div class="form-group">
+        <label>{{localize "group-travel.Rules.recognition.identifiers"}}</label>
+        <input type="text" name="recognition.{{i}}.identifiers" value="{{e.identifiersText}}">
+      </div>
+      <div class="form-group">
+        <label>{{localize "group-travel.Rules.recognition.names"}}</label>
+        <input type="text" name="recognition.{{i}}.names" value="{{e.namesText}}">
+      </div>
+    </fieldset>
+    {{/each}}
+    <button type="button" data-action="addRow" data-list="recognition"><i class="fa-solid fa-plus" inert></i> {{localize "group-travel.Rules.add"}}</button>
+  </section>
+
+  {{!-- Official rules --}}
+  <section class="tab {{tabs.official.cssClass}}" data-tab="official" data-group="primary">
+    <div class="form-group">
+      <label>{{localize "group-travel.Rules.official.forcedMarch"}}</label>
+      <input type="checkbox" name="officialRules.forcedMarch" {{checked rules.officialRules.forcedMarch}}>
+    </div>
+    <p class="hint">{{localize "group-travel.Rules.official.forcedMarchHint"}}</p>
+    <div class="form-group">
+      <label>{{localize "group-travel.Rules.official.privation"}}</label>
+      <input type="checkbox" name="officialRules.privation" {{checked rules.officialRules.privation}}>
+    </div>
+    <p class="hint">{{localize "group-travel.Rules.official.privationHint"}}</p>
+    <div class="form-group">
+      <label>{{localize "group-travel.Rules.official.table"}}</label>
+      <input type="text" name="defaultTable" value="{{rules.defaultTable}}">
+    </div>
+  </section>
+</div>
