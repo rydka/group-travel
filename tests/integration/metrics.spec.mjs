@@ -133,7 +133,7 @@ for (const set of sets) {
           const out = { food: 0, water: 0 };
           const { classifyItem } = api.core.recognition;
           const { itemPortions } = api.core.inventory;
-          const plain = (i) => ({ _id: i.id, name: i.name, type: i.type, system: { identifier: i.system.identifier, quantity: i.system.quantity, uses: { max: Number(i.system.uses.max) || 0, spent: i.system.uses.spent || 0, autoDestroy: !!i.system.uses.autoDestroy }, container: i.system.container } });
+          const plain = (i) => ({ _id: i.id, name: i.name, type: i.type, system: { identifier: i.system.identifier, quantity: i.system.quantity, uses: { max: Number(i.system.uses?.max) || 0, spent: i.system.uses?.spent || 0, autoDestroy: !!i.system.uses?.autoDestroy }, container: i.system.container } });
           for (const i of game.actors.get(actorId).items) {
             const c = classifyItem(plain(i), api.getRules().recognition);
             if (c && (c.category === "food" || c.category === "water")) out[c.category] += itemPortions(plain(i));

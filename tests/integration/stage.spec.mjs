@@ -189,6 +189,7 @@ test("C10, C11, C11b, C12: closure consumes, queues the saves, applies failures 
     const api = game.modules.get("group-travel").api;
     const group = game.actors.get(id);
     await api.startStage(group);
+    await api.setPace(group, "normal"); // blank characters make dnd5e propose the slow pace
     await api.closeStage(group); // no autoRoll: inspect the queue first
     const run = group.getFlag("group-travel", "travel").run;
     const queue = run.saves[map.alba].map((s) => ({ kind: s.kind, day: s.day, dc: s.dc }));
@@ -312,6 +313,58 @@ test("C13, M5: undo restores every field (items, effects, exhaustion, flags), re
     return { differences, midChanged: window.gtT.diff(before, mid).length, midInfo, movedIds };
   }, { id: groupId, map });
   fs.writeFileSync(test.info().outputPath("M5-fidelite-annulation.json"), JSON.stringify(r, null, 2));
+  expect(r.midChanged).toBeGreaterThan(5); // the stage really changed things
+  expect(r.midInfo.albaRationsGone).toBe(true);
+  expect(r.midInfo.coraPintGone).toBe(true);
+  expect(r.midInfo.created).toBeGreaterThan(0);
+  expect(r.movedIds).toBe(true);
+  expect(r.differences).toEqual([]);
+});
+
+test("M5b: undo restores every field when exhaustion effects are only created (no existing level raised)", async ({ foundry }) => {
+  // Alba: pile of rations fully eaten (deleted), tent damaged by the event then repaired, exhaustion 1 -> 2.
+  // Bran: no exhaustion -> effect created; hunts rations (created item); no water -> dehydration state.
+  // Cora: 2024 water pint stack deleted inside a waterskin; level 5 -> 6.
+  const spec = party({
+    members: [
+      ch("alba", "Alba", [rations("alba-r", 2), ...skin("alba", 8), camp("alba-t", "Tent", "tent")]),
+      ch("bran", "Bran", [...skin("bran", 0).slice(0, 1)]),
+      ch("cora", "Cora", [rations("cora-r", 6), ...skin("cora", 4), camp("cora-b", "Bedroll", "bedroll")])
+    ]
+  });
+  const { groupId, map } = await setup(foundry, {
+    spec, stage: { days: 2, dc: 40 },
+    tableResults: [{ name: "Rain", effects: [{ type: "damageItem", category: "shelter", count: 1, steps: 1 }] }]
+  });
+  const r = await foundry(async ({ id, map }) => {
+    const api = game.modules.get("group-travel").api;
+    const group = game.actors.get(id);
+    window.__gtActions = foundry.utils.deepClone(api.getRules().actions);
+    await game.settings.set("group-travel", "actions", window.__gtActions.map((a) => (a.id === "hunt" ? { ...a, effect: { ...a.effect, formula: "4" } } : a)));
+    await game.settings.set("group-travel", "officialRules", { forcedMarch: true, privation: true });
+            await new Promise((r) => setTimeout(r, 500));
+    const before = window.gtT.canon(group);
+    await api.startStage(group);
+    const tent = game.actors.get(map.alba).items.get(window.gtT.idFor("alba-t"));
+    await api.submitAction(group, map.alba, { actionId: "repair", targetItemUuid: tent.uuid, success: true });
+    await api.submitAction(group, map.bran, { actionId: "hunt", success: true });
+    await api.closeStage(group, { autoRoll: true });
+    const mid = window.gtT.canon(group);
+    const midInfo = {
+      exhaustion: ["alba", "bran", "cora"].map((k) => game.actors.get(map[k]).system.attributes.exhaustion),
+      albaRationsGone: !game.actors.get(map.alba).items.get(window.gtT.idFor("alba-r")),
+      coraPintGone: !game.actors.get(map.cora).items.get(window.gtT.idFor("cora-p")),
+      branStates: game.actors.get(map.bran).effects.map((e) => e.name),
+      created: game.actors.get(map.bran).items.filter((i) => i.flags["group-travel"]?.created).length
+    };
+    await api.undoStage(group);
+    await new Promise((r) => setTimeout(r, 500));
+    const after = window.gtT.canon(group);
+    const differences = window.gtT.diff(before, after);
+    const movedIds = Object.keys(before).every((a) => JSON.stringify(before[a].items.map((i) => i._id)) === JSON.stringify(after[a].items.map((i) => i._id)));
+    return { differences, midChanged: window.gtT.diff(before, mid).length, midInfo, movedIds };
+  }, { id: groupId, map });
+  fs.writeFileSync(test.info().outputPath("M5b-fidelite-annulation-sans-niveau-existant.json"), JSON.stringify(r, null, 2));
   expect(r.midChanged).toBeGreaterThan(5); // the stage really changed things
   expect(r.midInfo.albaRationsGone).toBe(true);
   expect(r.midInfo.coraPintGone).toBe(true);
