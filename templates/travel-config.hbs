@@ -1,0 +1,111 @@
+<div class="gt-scroll">
+  {{!-- Stages --}}
+  <section class="tab {{tabs.stages.cssClass}}" data-tab="stages" data-group="primary">
+    <div class="form-group">
+      <label>{{localize "group-travel.Config.name"}}</label>
+      <input type="text" name="name" value="{{data.name}}" required>
+    </div>
+    {{#if running}}<p class="hint"><i class="fa-solid fa-triangle-exclamation" inert></i> {{localize "group-travel.Config.running"}}</p>{{/if}}
+    <p class="hint">{{localize "group-travel.Config.stagesHint"}}</p>
+    <table class="gt-table gt-stages">
+      <thead><tr>
+        <th>{{localize "group-travel.Config.stage.name"}}</th>
+        <th>{{localize "group-travel.Config.stage.days"}}</th>
+        <th>{{localize "group-travel.Config.stage.terrain"}}</th>
+        <th data-tooltip="{{localize "group-travel.Config.stage.dcHint"}}">{{localize "group-travel.Config.stage.dc"}}</th>
+        <th data-tooltip="{{localize "group-travel.Config.stage.foodHint"}}">{{localize "group-travel.Config.stage.food"}}</th>
+        <th data-tooltip="{{localize "group-travel.Config.stage.waterHint"}}">{{localize "group-travel.Config.stage.water"}}</th>
+        <th data-tooltip="{{localize "group-travel.Config.stage.hoursHint"}}">{{localize "group-travel.Config.stage.hours"}}</th>
+        <th></th>
+      </tr></thead>
+      <tbody>
+        {{#each stages as |s i|}}
+        <tr>
+          <td><input type="hidden" name="stages.{{i}}.id" value="{{s.id}}"><input type="text" name="stages.{{i}}.name" value="{{s.name}}"></td>
+          <td><input type="number" name="stages.{{i}}.days" value="{{s.days}}" min="1" step="1"></td>
+          <td><input type="text" name="stages.{{i}}.terrain" value="{{s.terrain}}"></td>
+          <td><input type="number" name="stages.{{i}}.dc" value="{{s.dcValue}}" step="1"></td>
+          <td><input type="number" name="stages.{{i}}.foodPerDay" value="{{s.foodPerDay}}" min="0" step="any"></td>
+          <td><input type="number" name="stages.{{i}}.waterPerDay" value="{{s.waterPerDay}}" min="0" step="any"></td>
+          <td><input type="number" name="stages.{{i}}.hoursPerDay" value="{{s.hoursValue}}" min="0" step="1"></td>
+          <td><button type="button" class="icon fa-solid fa-trash" data-action="deleteRow" data-list="stages" data-index="{{i}}"
+            data-tooltip aria-label="{{localize "group-travel.Rules.delete"}}"></button></td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    <button type="button" data-action="addRow" data-list="stages"><i class="fa-solid fa-plus" inert></i> {{localize "group-travel.Config.addStage"}}</button>
+  </section>
+
+  {{!-- Tiers --}}
+  <section class="tab {{tabs.tiers.cssClass}}" data-tab="tiers" data-group="primary">
+    <p class="hint">{{localize "group-travel.Rules.tiers.hint"}}</p>
+    <table class="gt-table">
+      <thead><tr>
+        <th>{{localize "group-travel.Rules.tiers.name"}}</th>
+        <th>{{localize "group-travel.Rules.tiers.min"}}</th>
+        <th>{{localize "group-travel.Rules.tiers.dc"}}</th>
+        <th></th>
+      </tr></thead>
+      <tbody>
+        {{#each tiers as |t i|}}
+        <tr>
+          <td><input type="hidden" name="tiers.{{i}}.id" value="{{t.id}}"><input type="text" name="tiers.{{i}}.name" value="{{t.name}}"></td>
+          <td><input type="number" name="tiers.{{i}}.min" value="{{t.minValue}}" step="any" placeholder="{{localize "group-travel.Rules.tiers.floor"}}"></td>
+          <td><input type="number" name="tiers.{{i}}.dc" value="{{t.dc}}" step="1"></td>
+          <td><button type="button" class="icon fa-solid fa-trash" data-action="deleteRow" data-list="tiers" data-index="{{i}}"
+            data-tooltip aria-label="{{localize "group-travel.Rules.delete"}}"></button></td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    <button type="button" data-action="addRow" data-list="tiers"><i class="fa-solid fa-plus" inert></i> {{localize "group-travel.Rules.add"}}</button>
+  </section>
+
+  {{!-- Table --}}
+  <section class="tab {{tabs.table.cssClass}}" data-tab="table" data-group="primary">
+    <p class="hint">{{localize "group-travel.Config.tableHint"}}</p>
+    <div class="form-group gt-drop">
+      <label>{{localize "group-travel.Config.table"}}</label>
+      <input type="text" name="tableUuid" value="{{data.tableUuid}}" placeholder="RollTable.xxxxxxxxxxxxxxxx">
+    </div>
+    {{#if table}}
+    <p><i class="fa-solid fa-table-list" inert></i> {{table.name}}{{#unless table.world}} · {{localize "group-travel.Config.compendiumTable"}}{{/unless}}</p>
+    {{/if}}
+    {{#if tableMissing}}<p class="gt-warning">{{localize "group-travel.Config.tableMissing"}}</p>{{/if}}
+    <div class="gt-buttons">
+      <button type="button" data-action="createExample"><i class="fa-solid fa-wand-magic-sparkles" inert></i> {{localize "group-travel.Config.createExample"}}</button>
+      {{#if table}}{{#unless table.world}}
+      <button type="button" data-action="importTable"><i class="fa-solid fa-file-import" inert></i> {{localize "group-travel.Config.importTable"}}</button>
+      {{/unless}}{{/if}}
+    </div>
+  </section>
+
+  {{!-- Result effects --}}
+  <section class="tab {{tabs.effects.cssClass}}" data-tab="effects" data-group="primary">
+    {{#unless table}}<p class="hint">{{localize "group-travel.Config.noTable"}}</p>{{/unless}}
+    {{#if table}}{{#unless editableEffects}}<p class="hint">{{localize "group-travel.Config.effectsLocked"}}</p>{{/unless}}{{/if}}
+    {{#if editableEffects}}
+    <p class="hint">{{localize "group-travel.Config.effectsHint"}}</p>
+    <input type="hidden" name="effectResults" value="{{#each results as |r|}}{{r.id}}{{#unless @last}},{{/unless}}{{/each}}">
+    {{#each results as |r|}}
+    <fieldset class="gt-row">
+      <legend>{{r.label}}</legend>
+      {{#each r.effects as |e j|}}
+      <div class="form-group gt-effect">
+        <select name="effects.{{r.id}}.{{j}}.type">{{selectOptions @root.effectTypes selected=e.type}}</select>
+        <input type="number" name="effects.{{r.id}}.{{j}}.amount" value="{{e.amount}}" min="0" step="any" placeholder="{{localize "group-travel.Config.effect.amount"}}">
+        <select name="effects.{{r.id}}.{{j}}.category">{{selectOptions @root.damageCategories selected=e.category}}</select>
+        <input type="number" name="effects.{{r.id}}.{{j}}.count" value="{{e.count}}" min="0" step="1" placeholder="{{localize "group-travel.Config.effect.count"}}">
+        <input type="number" name="effects.{{r.id}}.{{j}}.steps" value="{{e.steps}}" min="1" step="1" placeholder="{{localize "group-travel.Config.effect.steps"}}">
+        <input type="number" name="effects.{{r.id}}.{{j}}.value" value="{{e.value}}" step="any" placeholder="{{localize "group-travel.Config.effect.value"}}">
+        <button type="button" class="icon fa-solid fa-trash" data-action="deleteEffect" data-result="{{r.id}}" data-index="{{j}}"
+          data-tooltip aria-label="{{localize "group-travel.Rules.delete"}}"></button>
+      </div>
+      {{/each}}
+      <button type="button" data-action="addEffect" data-result="{{r.id}}"><i class="fa-solid fa-plus" inert></i> {{localize "group-travel.Config.addEffect"}}</button>
+    </fieldset>
+    {{/each}}
+    {{/if}}
+  </section>
+</div>

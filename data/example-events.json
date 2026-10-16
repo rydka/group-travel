@@ -1,0 +1,55 @@
+{
+  "name": { "en": "Travel events (example)", "fr": "Événements de voyage (exemple)" },
+  "formula": "1d8",
+  "img": "icons/svg/d20-grey.svg",
+  "results": [
+    {
+      "range": [1, 1],
+      "name": { "en": "Quiet road", "fr": "Route paisible" },
+      "description": { "en": "Nothing happens.", "fr": "Il ne se passe rien." },
+      "effects": [{ "type": "none" }]
+    },
+    {
+      "range": [2, 2],
+      "name": { "en": "Pouring rain", "fr": "Pluie battante" },
+      "description": { "en": "A tent tears under the downpour.", "fr": "Une tente se déchire sous l'averse." },
+      "effects": [{ "type": "damageItem", "category": "shelter", "count": 1, "steps": 1 }, { "type": "comfort", "value": -1 }]
+    },
+    {
+      "range": [3, 3],
+      "name": { "en": "Spoiled food", "fr": "Vivres gâtés" },
+      "description": { "en": "Part of the food goes bad.", "fr": "Une partie des vivres se gâte." },
+      "effects": [{ "type": "loseFood", "amount": 3 }]
+    },
+    {
+      "range": [4, 4],
+      "name": { "en": "Leaking waterskin", "fr": "Outre percée" },
+      "description": { "en": "Water is lost during the day.", "fr": "De l'eau se perd pendant la journée." },
+      "effects": [{ "type": "loseWater", "amount": 2 }]
+    },
+    {
+      "range": [5, 5],
+      "name": { "en": "Freezing night", "fr": "Nuit glaciale" },
+      "description": { "en": "Nobody sleeps well.", "fr": "Personne ne dort bien." },
+      "effects": [{ "type": "comfort", "value": -2 }]
+    },
+    {
+      "range": [6, 6],
+      "name": { "en": "Raid on the camp", "fr": "Maraude au camp" },
+      "description": { "en": "Wild animals raid the camp at night.", "fr": "Des bêtes sauvages fouillent le camp pendant la nuit." },
+      "effects": [{ "type": "loseFood", "amount": 2 }, { "type": "damageItem", "category": "any", "count": 1, "steps": 1 }]
+    },
+    {
+      "range": [7, 7],
+      "name": { "en": "Sheltered campsite", "fr": "Bivouac abrité" },
+      "description": { "en": "A perfect spot to rest.", "fr": "Un endroit idéal pour se reposer." },
+      "effects": [{ "type": "comfort", "value": 2 }]
+    },
+    {
+      "range": [8, 8],
+      "name": { "en": "Storm", "fr": "Tempête" },
+      "description": { "en": "The wind batters the camp all night.", "fr": "Le vent malmène le camp toute la nuit." },
+      "effects": [{ "type": "damageItem", "category": "any", "count": 2, "steps": 1 }, { "type": "comfort", "value": -2 }]
+    }
+  ]
+}
