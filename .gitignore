@@ -2,3 +2,6 @@ node_modules/
 dist/
 coverage/
 *.log
+# Compendium packs are built from packs/_source by npm run build:packs
+packs/*/
+!packs/_source/
