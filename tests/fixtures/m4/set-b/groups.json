@@ -1,0 +1,739 @@
+[
+  {
+    "id": "b01",
+    "name": "Mixed 2014 with group stock",
+    "rulesVersion": "legacy",
+    "members": [
+      {
+        "id": "ada",
+        "name": "Ada",
+        "type": "character",
+        "items": [
+          {
+            "_id": "ada-r",
+            "name": "Rations",
+            "type": "consumable",
+            "system": {
+              "identifier": "rations",
+              "quantity": 4,
+              "uses": {
+                "max": 1,
+                "spent": 0,
+                "autoDestroy": true
+              },
+              "rarity": "",
+              "container": null
+            },
+            "flags": {}
+          },
+          {
+            "_id": "ada-w",
+            "name": "Waterskin",
+            "type": "consumable",
+            "system": {
+              "identifier": "waterskin",
+              "quantity": 2,
+              "uses": {
+                "max": 4,
+                "spent": 3,
+                "autoDestroy": false
+              },
+              "rarity": "",
+              "container": null
+            },
+            "flags": {}
+          },
+          {
+            "_id": "ada-t",
+            "name": "Tent, two-person",
+            "type": "loot",
+            "system": {
+              "identifier": "two-person-tent",
+              "quantity": 1,
+              "uses": {
+                "max": 0,
+                "spent": 0,
+                "autoDestroy": false
+              },
+              "rarity": "rare",
+              "container": null
+            },
+            "flags": {
+              "group-travel": {
+                "condition": "worn"
+              }
+            }
+          },
+          {
+            "_id": "ada-b",
+            "name": "Bedroll",
+            "type": "loot",
+            "system": {
+              "identifier": "bedroll",
+              "quantity": 1,
+              "uses": {
+                "max": 0,
+                "spent": 0,
+                "autoDestroy": false
+              },
+              "rarity": "",
+              "container": null
+            },
+            "flags": {}
+          }
+        ]
+      },
+      {
+        "id": "bram",
+        "name": "Bram",
+        "type": "character",
+        "items": [
+          {
+            "_id": "bram-r",
+            "name": "Rations",
+            "type": "consumable",
+            "system": {
+              "identifier": "rations",
+              "quantity": 3,
+              "uses": {
+                "max": 1,
+                "spent": 0,
+                "autoDestroy": true
+              },
+              "rarity": "",
+              "container": null
+            },
+            "flags": {}
+          },
+          {
+            "_id": "bram-bl",
+            "name": "Blanket",
+            "type": "loot",
+            "system": {
+              "identifier": "blanket",
+              "quantity": 1,
+              "uses": {
+                "max": 0,
+                "spent": 0,
+                "autoDestroy": false
+              },
+              "rarity": "uncommon",
+              "container": null
+            },
+            "flags": {}
+          },
+          {
+            "_id": "bram-w",
+            "name": "Waterskin",
+            "type": "consumable",
+            "system": {
+              "identifier": "waterskin",
+              "quantity": 1,
+              "uses": {
+                "max": 4,
+                "spent": 0,
+                "autoDestroy": false
+              },
+              "rarity": "",
+              "container": null
+            },
+            "flags": {}
+          }
+        ]
+      },
+      {
+        "id": "cleo",
+        "name": "Cleo",
+        "type": "character",
+        "items": []
+      }
+    ],
+    "items": [
+      {
+        "_id": "grp-r",
+        "name": "Rations",
+        "type": "consumable",
+        "system": {
+          "identifier": "rations",
+          "quantity": 6,
+          "uses": {
+            "max": 1,
+            "spent": 0,
+            "autoDestroy": true
+          },
+          "rarity": "",
+          "container": null
+        },
+        "flags": {}
+      }
+    ],
+    "primaryVehicle": null,
+    "expected": {
+      "memberCount": 3,
+      "totals": {
+        "food": 13,
+        "water": 9,
+        "shelter": 1,
+        "bedding": 2,
+        "gear": 0
+      },
+      "foodDays": 4.333333333333333,
+      "waterRations": 2.25,
+      "waterDays": 0.75,
+      "days": 0,
+      "comfort": 4.5,
+      "tier": "rough"
+    }
+  },
+  {
+    "id": "b02",
+    "name": "2024 backpack and loose pints",
+    "rulesVersion": "modern",
+    "members": [
+      {
+        "id": "dov",
+        "name": "Dov",
+        "type": "character",
+        "items": [
+          {
+            "_id": "dov-bag",
+            "name": "Backpack",
+            "type": "container",
+            "system": {
+              "identifier": "backpack",
+              "quantity": 1,
+              "uses": {
+                "max": 0,
+                "spent": 0,
+                "autoDestroy": false
+              },
+              "rarity": "",
+              "container": null
+            },
+            "flags": {}
+          },
+          {
+            "_id": "dov-s",
+            "name": "Waterskin",
+            "type": "container",
+            "system": {
+              "identifier": "waterskin",
+              "quantity": 1,
+              "uses": {
+                "max": 0,
+                "spent": 0,
+                "autoDestroy": false
+              },
+              "rarity": "",
+              "container": "dov-bag"
+            },
+            "flags": {}
+          },
+          {
+            "_id": "dov-p",
+            "name": "Water (Pint)",
+            "type": "consumable",
+            "system": {
+              "identifier": "water-pint",
+              "quantity": 3,
+              "uses": {
+                "max": 1,
+                "spent": 0,
+                "autoDestroy": true
+              },
+              "rarity": "",
+              "container": "dov-s"
+            },
+            "flags": {}
+          },
+          {
+            "_id": "dov-r",
+            "name": "Rations",
+            "type": "consumable",
+            "system": {
+              "identifier": "rations",
+              "quantity": 5,
+              "uses": {
+                "max": 1,
+                "spent": 0,
+                "autoDestroy": true
+              },
+              "rarity": "",
+              "container": "dov-bag"
+            },
+            "flags": {}
+          },
+          {
+            "_id": "dov-t",
+            "name": "Tent",
+            "type": "loot",
+            "system": {
+              "identifier": "tent-3",
+              "quantity": 1,
+              "uses": {
+                "max": 0,
+                "spent": 0,
+                "autoDestroy": false
+              },
+              "rarity": "",
+              "container": "dov-bag"
+            },
+            "flags": {}
+          }
+        ]
+      },
+      {
+        "id": "eve",
+        "name": "Eve",
+        "type": "character",
+        "items": [
+          {
+            "_id": "eve-s",
+            "name": "Waterskin",
+            "type": "container",
+            "system": {
+              "identifier": "waterskin",
+              "quantity": 1,
+              "uses": {
+                "max": 0,
+                "spent": 0,
+                "autoDestroy": false
+              },
+              "rarity": "",
+              "container": null
+            },
+            "flags": {}
+          },
+          {
+            "_id": "eve-p1",
+            "name": "Water (Pint)",
+            "type": "consumable",
+            "system": {
+              "identifier": "water-pint",
+              "quantity": 4,
+              "uses": {
+                "max": 1,
+                "spent": 0,
+                "autoDestroy": true
+              },
+              "rarity": "",
+              "container": "eve-s"
+            },
+            "flags": {}
+          },
+          {
+            "_id": "eve-p2",
+            "name": "Water (Pint)",
+            "type": "consumable",
+            "system": {
+              "identifier": "water-pint",
+              "quantity": 2,
+              "uses": {
+                "max": 1,
+                "spent": 0,
+                "autoDestroy": true
+              },
+              "rarity": "",
+              "container": null
+            },
+            "flags": {}
+          },
+          {
+            "_id": "eve-b",
+            "name": "Bedroll",
+            "type": "loot",
+            "system": {
+              "identifier": "bedroll",
+              "quantity": 1,
+              "uses": {
+                "max": 0,
+                "spent": 0,
+                "autoDestroy": false
+              },
+              "rarity": "uncommon",
+              "container": null
+            },
+            "flags": {}
+          }
+        ]
+      }
+    ],
+    "items": [],
+    "primaryVehicle": null,
+    "expected": {
+      "memberCount": 2,
+      "totals": {
+        "food": 5,
+        "water": 9,
+        "shelter": 1,
+        "bedding": 1,
+        "gear": 0
+      },
+      "foodDays": 2.5,
+      "waterRations": 2.25,
+      "waterDays": 1.125,
+      "days": 1,
+      "comfort": 3,
+      "tier": "rough"
+    }
+  },
+  {
+    "id": "b03",
+    "name": "Vehicle member, gear",
+    "rulesVersion": "legacy",
+    "members": [
+      {
+        "id": "fay",
+        "name": "Fay",
+        "type": "character",
+        "items": [
+          {
+            "_id": "fay-r",
+            "name": "Rations",
+            "type": "consumable",
+            "system": {
+              "identifier": "rations",
+              "quantity": 2,
+              "uses": {
+                "max": 1,
+                "spent": 0,
+                "autoDestroy": true
+              },
+              "rarity": "",
+              "container": null
+            },
+            "flags": {}
+          },
+          {
+            "_id": "fay-w",
+            "name": "Outre",
+            "type": "consumable",
+            "system": {
+              "identifier": "outre-2",
+              "quantity": 3,
+              "uses": {
+                "max": 4,
+                "spent": 4,
+                "autoDestroy": false
+              },
+              "rarity": "",
+              "container": null
+            },
+            "flags": {}
+          }
+        ]
+      },
+      {
+        "id": "gus",
+        "name": "Gus",
+        "type": "character",
+        "items": [
+          {
+            "_id": "gus-m",
+            "name": "Mess Kit",
+            "type": "loot",
+            "system": {
+              "identifier": "mess-kit",
+              "quantity": 2,
+              "uses": {
+                "max": 0,
+                "spent": 0,
+                "autoDestroy": false
+              },
+              "rarity": "",
+              "container": null
+            },
+            "flags": {}
+          },
+          {
+            "_id": "gus-t",
+            "name": "Tinderbox",
+            "type": "loot",
+            "system": {
+              "identifier": "tinderbox",
+              "quantity": 1,
+              "uses": {
+                "max": 0,
+                "spent": 0,
+                "autoDestroy": false
+              },
+              "rarity": "",
+              "container": null
+            },
+            "flags": {}
+          },
+          {
+            "_id": "gus-s",
+            "name": "Pierre",
+            "type": "loot",
+            "system": {
+              "identifier": "pierre",
+              "quantity": 1,
+              "uses": {
+                "max": 0,
+                "spent": 0,
+                "autoDestroy": false
+              },
+              "rarity": "",
+              "container": null
+            },
+            "flags": {}
+          }
+        ]
+      },
+      {
+        "id": "cart",
+        "name": "Cart",
+        "type": "vehicle",
+        "items": [
+          {
+            "_id": "cart-r",
+            "name": "Rations",
+            "type": "consumable",
+            "system": {
+              "identifier": "rations",
+              "quantity": 100,
+              "uses": {
+                "max": 1,
+                "spent": 0,
+                "autoDestroy": true
+              },
+              "rarity": "",
+              "container": null
+            },
+            "flags": {}
+          }
+        ]
+      }
+    ],
+    "items": [],
+    "primaryVehicle": null,
+    "expected": {
+      "memberCount": 2,
+      "totals": {
+        "food": 2,
+        "water": 8,
+        "shelter": 0,
+        "bedding": 0,
+        "gear": 3
+      },
+      "foodDays": 1,
+      "waterRations": 2,
+      "waterDays": 1,
+      "days": 1,
+      "comfort": 0,
+      "tier": "miserable"
+    }
+  },
+  {
+    "id": "b04",
+    "name": "Comfort extremes and custom identifier",
+    "rulesVersion": "modern",
+    "members": [
+      {
+        "id": "hal",
+        "name": "Hal",
+        "type": "character",
+        "items": [
+          {
+            "_id": "hal-t",
+            "name": "Tent",
+            "type": "loot",
+            "system": {
+              "identifier": "tent",
+              "quantity": 1,
+              "uses": {
+                "max": 0,
+                "spent": 0,
+                "autoDestroy": false
+              },
+              "rarity": "artifact",
+              "container": null
+            },
+            "flags": {}
+          },
+          {
+            "_id": "hal-b",
+            "name": "Bedroll",
+            "type": "loot",
+            "system": {
+              "identifier": "bedroll",
+              "quantity": 2,
+              "uses": {
+                "max": 0,
+                "spent": 0,
+                "autoDestroy": false
+              },
+              "rarity": "rare",
+              "container": null
+            },
+            "flags": {}
+          },
+          {
+            "_id": "hal-bl",
+            "name": "Blanket",
+            "type": "loot",
+            "system": {
+              "identifier": "blanket",
+              "quantity": 1,
+              "uses": {
+                "max": 0,
+                "spent": 0,
+                "autoDestroy": false
+              },
+              "rarity": "veryRare",
+              "container": null
+            },
+            "flags": {
+              "group-travel": {
+                "condition": "worn"
+              }
+            }
+          },
+          {
+            "_id": "hal-f",
+            "name": "Couverture",
+            "type": "loot",
+            "system": {
+              "identifier": "fur-blanket",
+              "quantity": 4,
+              "uses": {
+                "max": 0,
+                "spent": 0,
+                "autoDestroy": false
+              },
+              "rarity": "",
+              "container": null
+            },
+            "flags": {
+              "group-travel": {
+                "condition": "damaged"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "items": [],
+    "primaryVehicle": null,
+    "expected": {
+      "memberCount": 1,
+      "totals": {
+        "food": 0,
+        "water": 0,
+        "shelter": 1,
+        "bedding": 7,
+        "gear": 0
+      },
+      "foodDays": 0,
+      "waterRations": 0,
+      "waterDays": 0,
+      "days": 0,
+      "comfort": 14,
+      "tier": "comfortable"
+    }
+  },
+  {
+    "id": "b05",
+    "name": "Four members, nothing usable",
+    "rulesVersion": "legacy",
+    "members": [
+      {
+        "id": "ian",
+        "name": "Ian",
+        "type": "character",
+        "items": [
+          {
+            "_id": "ian-sw",
+            "name": "Dagger",
+            "type": "weapon",
+            "system": {
+              "identifier": "dagger",
+              "quantity": 1,
+              "uses": {
+                "max": 0,
+                "spent": 0,
+                "autoDestroy": false
+              },
+              "rarity": "",
+              "container": null
+            },
+            "flags": {}
+          }
+        ]
+      },
+      {
+        "id": "jo",
+        "name": "Jo",
+        "type": "character",
+        "items": []
+      },
+      {
+        "id": "kit",
+        "name": "Kit",
+        "type": "character",
+        "items": [
+          {
+            "_id": "kit-r",
+            "name": "Rations",
+            "type": "consumable",
+            "system": {
+              "identifier": "rations",
+              "quantity": 0,
+              "uses": {
+                "max": 1,
+                "spent": 0,
+                "autoDestroy": true
+              },
+              "rarity": "",
+              "container": null
+            },
+            "flags": {}
+          }
+        ]
+      },
+      {
+        "id": "lou",
+        "name": "Lou",
+        "type": "character",
+        "items": []
+      }
+    ],
+    "items": [
+      {
+        "_id": "grp-w",
+        "name": "Waterskin",
+        "type": "consumable",
+        "system": {
+          "identifier": "waterskin",
+          "quantity": 1,
+          "uses": {
+            "max": 4,
+            "spent": 4,
+            "autoDestroy": false
+          },
+          "rarity": "",
+          "container": null
+        },
+        "flags": {}
+      }
+    ],
+    "primaryVehicle": null,
+    "expected": {
+      "memberCount": 4,
+      "totals": {
+        "food": 0,
+        "water": 0,
+        "shelter": 0,
+        "bedding": 0,
+        "gear": 0
+      },
+      "foodDays": 0,
+      "waterRations": 0,
+      "waterDays": 0,
+      "days": 0,
+      "comfort": 0,
+      "tier": "miserable"
+    }
+  }
+]

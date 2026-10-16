@@ -1,0 +1,178 @@
+[
+  {
+    "id": "b-v01",
+    "name": "Slow pace, stage DC",
+    "rulesVersion": "legacy",
+    "conMod": 0,
+    "group": {
+      "id": "bv1g",
+      "name": "Ivo alone",
+      "rulesVersion": "legacy",
+      "members": [
+        {
+          "id": "ivo",
+          "name": "Ivo",
+          "type": "character",
+          "items": [
+            {
+              "_id": "ivo-r",
+              "name": "Rations",
+              "type": "consumable",
+              "system": {
+                "identifier": "rations",
+                "quantity": 5,
+                "uses": {
+                  "max": 1,
+                  "spent": 0,
+                  "autoDestroy": true
+                },
+                "rarity": "",
+                "container": null
+              },
+              "flags": {}
+            },
+            {
+              "_id": "ivo-w",
+              "name": "Waterskin",
+              "type": "consumable",
+              "system": {
+                "identifier": "waterskin",
+                "quantity": 2,
+                "uses": {
+                  "max": 4,
+                  "spent": 0,
+                  "autoDestroy": false
+                },
+                "rarity": "",
+                "container": null
+              },
+              "flags": {}
+            },
+            {
+              "_id": "ivo-b",
+              "name": "Bedroll",
+              "type": "loot",
+              "system": {
+                "identifier": "bedroll",
+                "quantity": 1,
+                "uses": {
+                  "max": 0,
+                  "spent": 0,
+                  "autoDestroy": false
+                },
+                "rarity": "rare",
+                "container": null
+              },
+              "flags": {}
+            },
+            {
+              "_id": "ivo-t",
+              "name": "Tent, two-person",
+              "type": "loot",
+              "system": {
+                "identifier": "two-person-tent",
+                "quantity": 1,
+                "uses": {
+                  "max": 0,
+                  "spent": 0,
+                  "autoDestroy": false
+                },
+                "rarity": "",
+                "container": null
+              },
+              "flags": {}
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "_id": "grp-r",
+          "name": "Rations",
+          "type": "consumable",
+          "system": {
+            "identifier": "rations",
+            "quantity": 2,
+            "uses": {
+              "max": 1,
+              "spent": 0,
+              "autoDestroy": true
+            },
+            "rarity": "",
+            "container": null
+          },
+          "flags": {}
+        },
+        {
+          "_id": "grp-w",
+          "name": "Waterskin",
+          "type": "consumable",
+          "system": {
+            "identifier": "waterskin",
+            "quantity": 1,
+            "uses": {
+              "max": 4,
+              "spent": 0,
+              "autoDestroy": false
+            },
+            "rarity": "",
+            "container": null
+          },
+          "flags": {}
+        }
+      ],
+      "primaryVehicle": null
+    },
+    "stage": {
+      "id": "s1",
+      "name": "Marsh",
+      "days": 2,
+      "terrain": "marsh",
+      "dc": 12,
+      "foodPerDay": 1,
+      "waterPerDay": 1,
+      "hoursPerDay": null
+    },
+    "pace": "slow",
+    "expected": {
+      "effectiveDays": 3,
+      "finalPortions": {
+        "ivo": {
+          "food": 4,
+          "water": 0
+        },
+        "group": {
+          "food": 0,
+          "water": 0
+        }
+      },
+      "deletedItems": [
+        "grp-r"
+      ],
+      "intake": {
+        "ivo": {
+          "food": [
+            1,
+            1,
+            1
+          ],
+          "water": [
+            4,
+            4,
+            4
+          ]
+        }
+      },
+      "shortage": {
+        "food": false,
+        "water": false
+      },
+      "comfortBefore": 4,
+      "comfortAfter": 4,
+      "tierAfter": "rough",
+      "fatigueDc": {
+        "ivo": 10
+      }
+    }
+  }
+]
