@@ -1,0 +1,13 @@
+{
+  "group-travel": {
+    "settings": {
+      "enabled": {
+        "name": "Enable Group Travel",
+        "hint": "Turn the module's features on or off for this world."
+      }
+    },
+    "errors": {
+      "wrongSystem": "Group Travel requires the dnd5e system."
+    }
+  }
+}
