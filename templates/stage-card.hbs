@@ -1,0 +1,42 @@
+<div class="group-travel group-travel-card">
+  <header>
+    <h3><i class="fa-solid fa-route" inert></i> {{stageName}}</h3>
+    <p class="gt-sub">{{travelName}} · {{localize "group-travel.Card.paceDays" pace=pace days=days}}</p>
+  </header>
+
+  {{#if event}}
+  <section>
+    <h4>{{localize "group-travel.Card.event"}} : {{event.name}}</h4>
+    {{#if event.effects.length}}<ul>{{#each event.effects}}<li>{{this}}</li>{{/each}}</ul>{{/if}}
+    {{#if event.guarded}}<p><i class="fa-solid fa-shield" inert></i> {{localize "group-travel.Card.guarded"}}</p>{{/if}}
+    {{#if event.lost.length}}<p>{{localize "group-travel.Card.applied"}} : {{#each event.lost}}{{this}}{{#unless @last}} ; {{/unless}}{{/each}}</p>{{/if}}
+  </section>
+  {{/if}}
+
+  <section>
+    <h4>{{localize "group-travel.Card.comfort"}}</h4>
+    <p>{{comfort.before}} → <strong>{{comfort.after}}</strong> · {{comfort.tier}} ({{localize "group-travel.Run.dc" dc=comfort.dc}})
+      {{#if comfort.shortage}}<br>{{localize "group-travel.Card.shortage"}}{{/if}}</p>
+  </section>
+
+  {{#each members as |m|}}
+  <section class="gt-card-member">
+    <h4>{{m.name}}</h4>
+    {{#if m.action}}
+    <p>{{m.action.label}} ({{localize "group-travel.Run.dc" dc=m.action.dc}}) :
+      {{#if m.action.done}}{{m.action.total}} — {{#if m.action.success}}{{localize "group-travel.Save.success"}}{{else}}{{localize "group-travel.Save.failure"}}{{/if}}{{#if m.action.detail}} ({{m.action.detail}}){{/if}}{{else}}{{localize "group-travel.Card.notRolled"}}{{/if}}</p>
+    {{/if}}
+    <p>{{m.consumption}}{{#if m.short}} · <strong>{{localize "group-travel.Card.short"}}</strong>{{/if}}</p>
+    {{#if m.dc}}<p class="gt-sub">{{m.dc}}</p>{{/if}}
+    {{#if m.saves.length}}
+    <ul>{{#each m.saves as |s|}}<li>{{s.label}}{{#if s.dc}} ({{localize "group-travel.Run.dc" dc=s.dc}}){{/if}} : {{#if s.failed}}<strong>{{s.result}}</strong>{{else}}{{s.result}}{{/if}}</li>{{/each}}</ul>
+    {{/if}}
+    <p>{{localize "group-travel.Card.exhaustion" before=m.exhaustion.before after=m.exhaustion.after}}{{#if m.privation}} · {{m.privation}}{{/if}}</p>
+  </section>
+  {{/each}}
+
+  <footer class="gt-sub">
+    {{#if fatigueSave}}{{localize "group-travel.Card.houseRule"}}{{/if}}
+    {{#if disableExhaustion}}<br>{{localize "group-travel.Card.exhaustionDisabled"}}{{/if}}
+  </footer>
+</div>
