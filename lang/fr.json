@@ -1,23 +1,70 @@
 {
   "group-travel": {
-    "Tab": { "Label": "Voyage" },
+    "Tab": {
+      "Label": "Voyage",
+      "noGm": "Un MJ doit être connecté pour modifier le voyage.",
+      "finished": "Voyage terminé",
+      "stageOf": "Étape {n} sur {total}",
+      "noTravel": "Pas encore de voyage",
+      "tierHint": "Palier de confort du camp (règle maison). Il fixe le DD du jet de fatigue de fin d'étape.",
+      "comfort": "Confort",
+      "houseRule": "Règle maison du module : jet de sauvegarde de Constitution en fin d'étape, au DD du palier de confort.",
+      "houseRuleShort": "règle maison",
+      "fatigueDc": "DD de fatigue {dc}",
+      "autonomyHint": "Jours de nourriture et d'eau pour tout le groupe, puis l'autonomie en jours complets.",
+      "days": "{n} j",
+      "noMembers": "Aucun membre : ajoutez des créatures au groupe.",
+      "nextStage": "Étape suivante",
+      "inventory": "Provisions et matériel de campement",
+      "members": "{n} membre(s)",
+      "none": "Aucun",
+      "shortageMalus": "Manque de nourriture ou d'eau",
+      "history": "Étapes terminées",
+      "stageDays": "{days} jours en moyenne ({preview} à l'allure actuelle)",
+      "stageDc": "DD d'étape {dc}",
+      "stageNeeds": "par membre et par jour : {food} ration(s), {water} ration(s) d'eau",
+      "stageHours": "{n} h de marche par jour"
+    },
     "settings": {
-      "enabled": { "name": "Activer Group Travel", "hint": "Ajoute l'onglet Voyage aux fiches de groupe dnd5e." },
+      "enabled": {
+        "name": "Activer Group Travel",
+        "hint": "Ajoute l'onglet Voyage aux fiches de groupe dnd5e."
+      },
       "rules": {
         "name": "Règles du voyage",
         "label": "Configurer les règles",
         "hint": "Valeurs de confort, paliers de confort par défaut, actions, allure, eau, reconnaissance des objets et règles officielles."
       },
-      "comfort": { "name": "Valeurs de confort" },
-      "defaultTiers": { "name": "Paliers de confort par défaut" },
-      "actions": { "name": "Actions" },
-      "pace": { "name": "Allure" },
-      "water": { "name": "Eau" },
-      "shortage": { "name": "Pénurie" },
-      "recognition": { "name": "Reconnaissance des objets" },
-      "officialRules": { "name": "Règles officielles" },
-      "fatigueSave": { "name": "Jet de fatigue" },
-      "defaultTable": { "name": "Table d'événements par défaut" }
+      "comfort": {
+        "name": "Valeurs de confort"
+      },
+      "defaultTiers": {
+        "name": "Paliers de confort par défaut"
+      },
+      "actions": {
+        "name": "Actions"
+      },
+      "pace": {
+        "name": "Allure"
+      },
+      "water": {
+        "name": "Eau"
+      },
+      "shortage": {
+        "name": "Pénurie"
+      },
+      "recognition": {
+        "name": "Reconnaissance des objets"
+      },
+      "officialRules": {
+        "name": "Règles officielles"
+      },
+      "fatigueSave": {
+        "name": "Jet de fatigue"
+      },
+      "defaultTable": {
+        "name": "Table d'événements par défaut"
+      }
     },
     "Errors": {
       "wrongSystem": "Group Travel nécessite le système dnd5e.",
@@ -39,6 +86,27 @@
         "formula": "Les actions de nourriture et d'eau demandent une formule (par exemple 1d4).",
         "value": "Une action de confort demande une valeur numérique.",
         "duplicate": "Deux actions ont le même identifiant."
+      },
+      "gmOnly": "Seul un MJ peut faire cela.",
+      "noTravel": "Ce groupe n'a pas de voyage.",
+      "stageRunning": "Une étape est déjà en cours.",
+      "noStage": "Il ne reste aucune étape.",
+      "wrongPhase": "Ce n'est pas possible à ce moment de l'étape.",
+      "notMember": "Cet acteur ne fait pas partie de l'étape.",
+      "actionDone": "Ce membre a déjà agi pendant cette étape.",
+      "saveOrder": "Ce jet n'est pas le prochain jet du membre.",
+      "noUndo": "Il n'y a rien à annuler.",
+      "rollMissing": "Le message du jet est introuvable.",
+      "rollAuthor": "Le message du jet ne vient pas de vous.",
+      "rollMismatch": "Le jet ne correspond pas au jet attendu.",
+      "notActiveGm": "Cette requête doit être envoyée au MJ actif.",
+      "noGroup": "Groupe introuvable.",
+      "forbidden": "Vous n'avez pas le droit de faire cela.",
+      "noQuery": "Vous n'avez pas le droit d'envoyer des requêtes au MJ (permission QUERY_USER).",
+      "travel": {
+        "name": "Donnez un nom au voyage.",
+        "stages": "Ajoutez au moins une étape.",
+        "stage": "Chaque étape demande un nom et une durée d'au moins un jour."
       }
     },
     "Warnings": {
@@ -48,13 +116,37 @@
         "amount": "Une perte de nourriture ou d'eau sans quantité valide a été ignorée.",
         "damage": "Un effet de dégâts au matériel mal réglé a été ignoré.",
         "value": "Un effet de confort sans valeur numérique a été ignoré."
-      }
+      },
+      "noTable": "La table d'événements de ce voyage est introuvable : aucun événement n'est tiré."
     },
-    "Tier": { "comfortable": "Confortable", "fair": "Correct", "rough": "Rude", "miserable": "Misérable" },
-    "Action": { "hunt": "Chasser et cueillir", "repair": "Réparer", "camp": "Aménager le camp", "guard": "Monter la garde" },
-    "Condition": { "intact": "Intact", "worn": "Usé", "damaged": "Abîmé", "destroyed": "Détruit" },
-    "Pace": { "fast": "Rapide", "normal": "Normale", "slow": "Lente" },
-    "Check": { "skill": "Compétence", "tool": "Outil", "ability": "Caractéristique" },
+    "Tier": {
+      "comfortable": "Confortable",
+      "fair": "Correct",
+      "rough": "Rude",
+      "miserable": "Misérable"
+    },
+    "Action": {
+      "hunt": "Chasser et cueillir",
+      "repair": "Réparer",
+      "camp": "Aménager le camp",
+      "guard": "Monter la garde"
+    },
+    "Condition": {
+      "intact": "Intact",
+      "worn": "Usé",
+      "damaged": "Abîmé",
+      "destroyed": "Détruit"
+    },
+    "Pace": {
+      "fast": "Rapide",
+      "normal": "Normale",
+      "slow": "Lente"
+    },
+    "Check": {
+      "skill": "Compétence",
+      "tool": "Outil",
+      "ability": "Caractéristique"
+    },
     "Effect": {
       "addFood": "Ajouter des rations",
       "addWater": "Ajouter de l'eau",
@@ -62,7 +154,14 @@
       "comfort": "Bonus de confort",
       "guard": "Garde (réduit l'événement de moitié)"
     },
-    "Category": { "food": "Rations", "water": "Eau", "shelter": "Abri", "bedding": "Couchage", "gear": "Autre matériel de campement" },
+    "Category": {
+      "food": "Rations",
+      "water": "Eau",
+      "shelter": "Abri",
+      "bedding": "Couchage",
+      "gear": "Autre matériel de campement",
+      "any": "N'importe quel objet de campement"
+    },
     "Rules": {
       "title": "Group Travel : règles",
       "tabs": {
@@ -133,6 +232,142 @@
         "privationHint": "Désactivée par défaut. Applique jour par jour les règles de nourriture et d'eau de l'édition choisie dans dnd5e (2014 ou 2024), puis pose et retire les états Malnutrition et Déshydratation.",
         "table": "Table d'événements par défaut (UUID)"
       }
+    },
+    "Unit": {
+      "food": "{n} ration(s)",
+      "water": "{n} ration(s) d'eau ({pints} pintes)"
+    },
+    "EffectText": {
+      "loseFood": "Perte de {n} ration(s)",
+      "loseWater": "Perte de {n} ration(s) d'eau",
+      "damageItem": "{n} objet(s) abîmé(s) ({category}) de {steps} cran(s)",
+      "comfort": "Confort {n}",
+      "none": "Aucun effet"
+    },
+    "EffectType": {
+      "loseFood": "Perte de rations",
+      "loseWater": "Perte d'eau",
+      "damageItem": "Objets abîmés",
+      "comfort": "Confort",
+      "none": "Aucun effet"
+    },
+    "Save": {
+      "march": "Marche forcée",
+      "food": "Faim",
+      "water": "Soif",
+      "fatigue": "Fatigue",
+      "dayHour": "jour {day}, heure {hour}",
+      "day": "jour {day}",
+      "maxLevel": "épuisement maximal atteint",
+      "missing": "membre absent",
+      "success": "réussite",
+      "failure": "échec",
+      "notApplied": "non appliqué (épuisement désactivé)",
+      "levels": "+{n} épuisement",
+      "auto": "automatique"
+    },
+    "Run": {
+      "pace": "Allure",
+      "days": "{n} jour(s)",
+      "guarded": "La garde réduit l'événement de moitié.",
+      "noEvent": "Aucun événement tiré (pas de table).",
+      "member": "Membre",
+      "action": "Action",
+      "saves": "Jets",
+      "exhaustion": "Épuisement",
+      "chooseItem": "Objet à réparer…",
+      "roll": "Lancer",
+      "rollSave": "Lancer le jet suivant",
+      "dc": "DD {dc}",
+      "dcDetail": "DD de fatigue {dc} = {base} (palier ou étape) {pace} (allure) +{shortage} (manque)",
+      "phase": {
+        "event": "événement",
+        "actions": "actions",
+        "saves": "jets",
+        "done": "terminée"
+      },
+      "added": {
+        "food": "+{n} ration(s)",
+        "water": "+{n} ration(s) d'eau"
+      }
+    },
+    "Comfort": {
+      "mod": {
+        "action": "Action",
+        "event": "Événement"
+      }
+    },
+    "GM": {
+      "configure": "Configurer",
+      "start": "Lancer l'étape",
+      "close": "Terminer l'étape",
+      "rollAll": "Lancer tous les jets en attente",
+      "undo": "Annuler la dernière étape",
+      "undoConfirm": "Remettre les rations, l'eau, l'état du matériel, l'épuisement, les états de privation et le voyage dans leur état d'avant la dernière étape ?"
+    },
+    "Card": {
+      "consumption": "A mangé {food}/{foodNeed} ration(s), bu {water}/{waterNeed} ration(s) d'eau",
+      "malnutrition": "Malnutrition",
+      "dehydration": "Déshydratation",
+      "undone": "Étape annulée",
+      "paceDays": "allure {pace}, {days} jour(s)",
+      "event": "Événement",
+      "guarded": "Réduit de moitié par la garde",
+      "applied": "Appliqué",
+      "comfort": "Confort",
+      "shortage": "L'étape a manqué de nourriture ou d'eau : malus de confort.",
+      "notRolled": "pas lancé",
+      "short": "a manqué de nourriture ou d'eau (+DD)",
+      "exhaustion": "Épuisement {before} → {after}",
+      "houseRule": "Jet de fatigue au DD du palier de confort : règle maison du module.",
+      "exhaustionDisabled": "L'épuisement est désactivé dans ce monde : les échecs ne sont pas appliqués."
+    },
+    "Config": {
+      "title": "Configurer le voyage",
+      "tabs": {
+        "stages": "Étapes",
+        "tiers": "Paliers de confort",
+        "table": "Table d'événements",
+        "effects": "Effets des résultats"
+      },
+      "name": "Nom du voyage",
+      "running": "Une étape est en cours : les changements s'appliquent à partir de la clôture.",
+      "stagesHint": "Durée : jours en moyenne à allure normale. Le DD d'étape, s'il est rempli, remplace celui du palier. Heures : heures de marche par jour (vide = valeur de la fiche de groupe, 8 par défaut).",
+      "stage": {
+        "name": "Nom",
+        "days": "Jours",
+        "terrain": "Terrain",
+        "dc": "DD",
+        "dcHint": "Facultatif : remplace le DD du palier de confort.",
+        "food": "Nourriture",
+        "foodHint": "Rations par membre et par jour",
+        "water": "Eau",
+        "waterHint": "Rations d'eau par membre et par jour",
+        "hours": "Heures",
+        "hoursHint": "Heures de marche par jour : au-delà de 8, marche forcée"
+      },
+      "addStage": "Ajouter une étape",
+      "tableHint": "Glissez une table aléatoire ici, collez son UUID ou créez la table d'exemple.",
+      "table": "Table aléatoire",
+      "compendiumTable": "table de compendium : importez-la dans le monde pour modifier ses effets",
+      "tableMissing": "Cette table est introuvable.",
+      "createExample": "Créer la table d'exemple",
+      "importTable": "Importer dans le monde",
+      "noTable": "Choisissez d'abord une table d'événements.",
+      "effectsLocked": "Les effets ne se modifient que sur une table du monde.",
+      "effectsHint": "Effets appliqués par chaque résultat. Une garde réussie les réduit tous de moitié (arrondi à l'inférieur). Quantités : rations, rations d'eau, objets.",
+      "effect": {
+        "amount": "quantité",
+        "count": "objets",
+        "steps": "crans",
+        "value": "confort"
+      },
+      "addEffect": "Ajouter un effet",
+      "delete": "Supprimer le voyage",
+      "deleteConfirm": "Supprimer ce voyage et son historique ? Les objets et les acteurs ne sont pas modifiés.",
+      "create": "Créer le voyage",
+      "saved": "Voyage enregistré.",
+      "exampleCreated": "Table « {name} » créée dans le monde."
     }
   }
 }

@@ -1,23 +1,70 @@
 {
   "group-travel": {
-    "Tab": { "Label": "Travel" },
+    "Tab": {
+      "Label": "Travel",
+      "noGm": "A GM must be connected to change the travel.",
+      "finished": "Travel finished",
+      "stageOf": "Stage {n} of {total}",
+      "noTravel": "No travel yet",
+      "tierHint": "Comfort tier of the camp (house rule). It sets the DC of the end-of-stage fatigue save.",
+      "comfort": "Comfort",
+      "houseRule": "House rule of the module: Constitution save at the end of each stage, at the DC of the comfort tier.",
+      "houseRuleShort": "house rule",
+      "fatigueDc": "Fatigue DC {dc}",
+      "autonomyHint": "Days of food and of water for the whole group, then the autonomy in full days.",
+      "days": "{n} d",
+      "noMembers": "No member: add creatures to the group.",
+      "nextStage": "Next stage",
+      "inventory": "Provisions and camp gear",
+      "members": "{n} member(s)",
+      "none": "None",
+      "shortageMalus": "Shortage of food or water",
+      "history": "Finished stages",
+      "stageDays": "{days} days on average ({preview} at the current pace)",
+      "stageDc": "stage DC {dc}",
+      "stageNeeds": "per member and per day: {food} ration(s), {water} water ration(s)",
+      "stageHours": "{n} h of walking per day"
+    },
     "settings": {
-      "enabled": { "name": "Enable Group Travel", "hint": "Adds the Travel tab to dnd5e group sheets." },
+      "enabled": {
+        "name": "Enable Group Travel",
+        "hint": "Adds the Travel tab to dnd5e group sheets."
+      },
       "rules": {
         "name": "Travel rules",
         "label": "Configure rules",
         "hint": "Comfort values, default comfort tiers, actions, pace, water, item recognition and official rules."
       },
-      "comfort": { "name": "Comfort values" },
-      "defaultTiers": { "name": "Default comfort tiers" },
-      "actions": { "name": "Actions" },
-      "pace": { "name": "Pace" },
-      "water": { "name": "Water" },
-      "shortage": { "name": "Shortage" },
-      "recognition": { "name": "Item recognition" },
-      "officialRules": { "name": "Official rules" },
-      "fatigueSave": { "name": "Fatigue save" },
-      "defaultTable": { "name": "Default event table" }
+      "comfort": {
+        "name": "Comfort values"
+      },
+      "defaultTiers": {
+        "name": "Default comfort tiers"
+      },
+      "actions": {
+        "name": "Actions"
+      },
+      "pace": {
+        "name": "Pace"
+      },
+      "water": {
+        "name": "Water"
+      },
+      "shortage": {
+        "name": "Shortage"
+      },
+      "recognition": {
+        "name": "Item recognition"
+      },
+      "officialRules": {
+        "name": "Official rules"
+      },
+      "fatigueSave": {
+        "name": "Fatigue save"
+      },
+      "defaultTable": {
+        "name": "Default event table"
+      }
     },
     "Errors": {
       "wrongSystem": "Group Travel requires the dnd5e system.",
@@ -39,6 +86,27 @@
         "formula": "Food and water actions need a formula (for example 1d4).",
         "value": "A comfort action needs a numeric value.",
         "duplicate": "Two actions have the same identifier."
+      },
+      "gmOnly": "Only a GM can do this.",
+      "noTravel": "This group has no travel.",
+      "stageRunning": "A stage is already in progress.",
+      "noStage": "There is no stage left.",
+      "wrongPhase": "This is not possible at this point of the stage.",
+      "notMember": "This actor is not a member of the stage.",
+      "actionDone": "This member has already acted during this stage.",
+      "saveOrder": "This save is not the next one of the member.",
+      "noUndo": "There is nothing to undo.",
+      "rollMissing": "The roll message cannot be found.",
+      "rollAuthor": "The roll message was not sent by you.",
+      "rollMismatch": "The roll does not match the expected roll.",
+      "notActiveGm": "This request must be sent to the active GM.",
+      "noGroup": "Group not found.",
+      "forbidden": "You are not allowed to do this.",
+      "noQuery": "You are not allowed to send requests to the GM (QUERY_USER permission).",
+      "travel": {
+        "name": "Give the travel a name.",
+        "stages": "Add at least one stage.",
+        "stage": "Every stage needs a name and a duration of at least one day."
       }
     },
     "Warnings": {
@@ -48,13 +116,37 @@
         "amount": "A food or water loss without a valid amount was ignored.",
         "damage": "An item damage effect with invalid settings was ignored.",
         "value": "A comfort effect without a numeric value was ignored."
-      }
+      },
+      "noTable": "The event table of this travel cannot be found: no event is drawn."
     },
-    "Tier": { "comfortable": "Comfortable", "fair": "Fair", "rough": "Rough", "miserable": "Miserable" },
-    "Action": { "hunt": "Hunt and forage", "repair": "Repair", "camp": "Set up camp", "guard": "Keep watch" },
-    "Condition": { "intact": "Intact", "worn": "Worn", "damaged": "Damaged", "destroyed": "Destroyed" },
-    "Pace": { "fast": "Fast", "normal": "Normal", "slow": "Slow" },
-    "Check": { "skill": "Skill", "tool": "Tool", "ability": "Ability" },
+    "Tier": {
+      "comfortable": "Comfortable",
+      "fair": "Fair",
+      "rough": "Rough",
+      "miserable": "Miserable"
+    },
+    "Action": {
+      "hunt": "Hunt and forage",
+      "repair": "Repair",
+      "camp": "Set up camp",
+      "guard": "Keep watch"
+    },
+    "Condition": {
+      "intact": "Intact",
+      "worn": "Worn",
+      "damaged": "Damaged",
+      "destroyed": "Destroyed"
+    },
+    "Pace": {
+      "fast": "Fast",
+      "normal": "Normal",
+      "slow": "Slow"
+    },
+    "Check": {
+      "skill": "Skill",
+      "tool": "Tool",
+      "ability": "Ability"
+    },
     "Effect": {
       "addFood": "Add rations",
       "addWater": "Add water",
@@ -62,7 +154,14 @@
       "comfort": "Comfort bonus",
       "guard": "Guard (halves the event)"
     },
-    "Category": { "food": "Rations", "water": "Water", "shelter": "Shelter", "bedding": "Bedding", "gear": "Other camp gear" },
+    "Category": {
+      "food": "Rations",
+      "water": "Water",
+      "shelter": "Shelter",
+      "bedding": "Bedding",
+      "gear": "Other camp gear",
+      "any": "Any camp item"
+    },
     "Rules": {
       "title": "Group Travel: rules",
       "tabs": {
@@ -133,6 +232,142 @@
         "privationHint": "Off by default. Applies the food and water rules of the dnd5e rules version (2014 or 2024) day by day, and sets and removes the Malnutrition and Dehydration states.",
         "table": "Default event table (UUID)"
       }
+    },
+    "Unit": {
+      "food": "{n} ration(s)",
+      "water": "{n} water ration(s) ({pints} pints)"
+    },
+    "EffectText": {
+      "loseFood": "Lose {n} ration(s)",
+      "loseWater": "Lose {n} water ration(s)",
+      "damageItem": "Damage {n} item(s) ({category}) by {steps} step(s)",
+      "comfort": "Comfort {n}",
+      "none": "No effect"
+    },
+    "EffectType": {
+      "loseFood": "Lose rations",
+      "loseWater": "Lose water",
+      "damageItem": "Damage items",
+      "comfort": "Comfort",
+      "none": "No effect"
+    },
+    "Save": {
+      "march": "Forced march",
+      "food": "Hunger",
+      "water": "Thirst",
+      "fatigue": "Fatigue",
+      "dayHour": "day {day}, hour {hour}",
+      "day": "day {day}",
+      "maxLevel": "maximum exhaustion reached",
+      "missing": "member missing",
+      "success": "success",
+      "failure": "failure",
+      "notApplied": "not applied (exhaustion disabled)",
+      "levels": "+{n} exhaustion",
+      "auto": "automatic"
+    },
+    "Run": {
+      "pace": "Pace",
+      "days": "{n} day(s)",
+      "guarded": "The watch halves the event.",
+      "noEvent": "No event drawn (no table).",
+      "member": "Member",
+      "action": "Action",
+      "saves": "Saves",
+      "exhaustion": "Exhaustion",
+      "chooseItem": "Item to repair…",
+      "roll": "Roll",
+      "rollSave": "Roll the next save",
+      "dc": "DC {dc}",
+      "dcDetail": "Fatigue DC {dc} = {base} (tier or stage) {pace} (pace) +{shortage} (shortage)",
+      "phase": {
+        "event": "event",
+        "actions": "actions",
+        "saves": "saves",
+        "done": "done"
+      },
+      "added": {
+        "food": "+{n} ration(s)",
+        "water": "+{n} water ration(s)"
+      }
+    },
+    "Comfort": {
+      "mod": {
+        "action": "Action",
+        "event": "Event"
+      }
+    },
+    "GM": {
+      "configure": "Configure",
+      "start": "Start the stage",
+      "close": "End the stage",
+      "rollAll": "Roll all pending saves",
+      "undo": "Undo the last stage",
+      "undoConfirm": "Restore rations, water, gear condition, exhaustion, privation states and the travel to their state before the last stage?"
+    },
+    "Card": {
+      "consumption": "Ate {food}/{foodNeed} ration(s), drank {water}/{waterNeed} water ration(s)",
+      "malnutrition": "Malnutrition",
+      "dehydration": "Dehydration",
+      "undone": "Stage undone",
+      "paceDays": "{pace} pace, {days} day(s)",
+      "event": "Event",
+      "guarded": "Halved by the watch",
+      "applied": "Applied",
+      "comfort": "Comfort",
+      "shortage": "The stage was short of food or water: comfort penalty.",
+      "notRolled": "not rolled",
+      "short": "short of food or water (+DC)",
+      "exhaustion": "Exhaustion {before} → {after}",
+      "houseRule": "Fatigue save at the comfort tier DC: house rule of the module.",
+      "exhaustionDisabled": "Exhaustion is disabled in this world: failures are not applied."
+    },
+    "Config": {
+      "title": "Configure the travel",
+      "tabs": {
+        "stages": "Stages",
+        "tiers": "Comfort tiers",
+        "table": "Event table",
+        "effects": "Result effects"
+      },
+      "name": "Travel name",
+      "running": "A stage is in progress: changes apply from the closure on.",
+      "stagesHint": "Duration: average days at normal pace. Stage DC replaces the tier DC when set. Hours: walking hours per day (empty = the group sheet value, 8 by default).",
+      "stage": {
+        "name": "Name",
+        "days": "Days",
+        "terrain": "Terrain",
+        "dc": "DC",
+        "dcHint": "Optional: replaces the DC of the comfort tier.",
+        "food": "Food",
+        "foodHint": "Rations per member and per day",
+        "water": "Water",
+        "waterHint": "Water rations per member and per day",
+        "hours": "Hours",
+        "hoursHint": "Walking hours per day: beyond 8, forced march"
+      },
+      "addStage": "Add a stage",
+      "tableHint": "Drag a roll table here, paste its UUID, or create the example table.",
+      "table": "Roll table",
+      "compendiumTable": "compendium table: import it into the world to edit its effects",
+      "tableMissing": "This table cannot be found.",
+      "createExample": "Create the example table",
+      "importTable": "Import into the world",
+      "noTable": "Choose an event table first.",
+      "effectsLocked": "Effects can only be edited on a world table.",
+      "effectsHint": "Effects applied by each result. A successful watch halves them all (rounded down). Amounts: rations, water rations, items.",
+      "effect": {
+        "amount": "amount",
+        "count": "items",
+        "steps": "steps",
+        "value": "comfort"
+      },
+      "addEffect": "Add an effect",
+      "delete": "Delete the travel",
+      "deleteConfirm": "Delete this travel and its history? Items and actors are not changed.",
+      "create": "Create the travel",
+      "saved": "Travel saved.",
+      "exampleCreated": "Table « {name} » created in the world."
     }
   }
 }

@@ -13,7 +13,10 @@ const foundryGlobals = {
   fromUuid: "readonly",
   fromUuidSync: "readonly",
   ChatMessage: "readonly",
-  Roll: "readonly"
+  Roll: "readonly",
+  RollTable: "readonly",
+  _replace: "readonly",
+  _del: "readonly"
 };
 
 export default [

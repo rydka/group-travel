@@ -30,3 +30,243 @@
 .group-travel .gt-row .form-group > input[type="number"] {
   flex: 0 0 5rem;
 }
+
+/* Travel configuration window: same layout as the Rules menu. */
+.group-travel.group-travel-config {
+  max-height: calc(100vh - 80px);
+}
+.group-travel.group-travel-config .window-content {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.group-travel.group-travel-config .gt-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+.group-travel.group-travel-config .form-footer {
+  flex: 0 0 auto;
+}
+.group-travel .gt-effect > select,
+.group-travel .gt-effect > input {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.group-travel .gt-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+.group-travel .gt-drop {
+  border: 1px dashed var(--color-border, #999);
+  border-radius: 4px;
+  padding: 0.25rem;
+}
+
+/* Travel tab of the group sheet: fixed header, scrolling body, GM bar. */
+.group-travel.gt-tab.active {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+.group-travel.gt-tab .gt-head {
+  flex: 0 0 auto;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--color-border, #999);
+}
+.group-travel.gt-tab .gt-title {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+}
+.group-travel.gt-tab .gt-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+  margin-top: 0.25rem;
+}
+.group-travel.gt-tab .gt-badge {
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  border: 1px solid var(--color-border, #999);
+  font-size: var(--font-size-12, 12px);
+}
+.group-travel.gt-tab .gt-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0.5rem 0.75rem;
+}
+.group-travel.gt-tab .gt-gm-bar {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding: 0.4rem 0.75rem;
+  border-top: 1px solid var(--color-border, #999);
+}
+.group-travel.gt-tab .gt-gm-bar button {
+  flex: 1 1 auto;
+  width: auto;
+}
+.group-travel .gt-sub {
+  opacity: 0.75;
+  font-size: var(--font-size-12, 12px);
+}
+.group-travel .gt-warning {
+  color: var(--color-level-warning, #c90);
+  margin: 0.25rem 0 0;
+}
+.group-travel .gt-block {
+  margin-bottom: 0.75rem;
+}
+.group-travel .gt-block h3 {
+  margin: 0.25rem 0;
+  font-size: var(--font-size-14, 14px);
+}
+.group-travel .gt-line {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.group-travel .gt-line select {
+  width: auto;
+}
+.group-travel .gt-event {
+  margin: 0.4rem 0;
+  padding: 0.4rem;
+  border-left: 3px solid var(--color-border-highlight, #c9593f);
+}
+.group-travel .gt-event-text p {
+  margin: 0.2rem 0;
+}
+.group-travel .gt-members {
+  width: 100%;
+  border-collapse: collapse;
+}
+.group-travel .gt-members td {
+  vertical-align: top;
+  padding: 0.25rem;
+}
+.group-travel .gt-members select {
+  width: 100%;
+  margin-bottom: 0.2rem;
+}
+.group-travel .gt-member {
+  display: flex;
+  gap: 0.3rem;
+  align-items: center;
+}
+.group-travel .gt-member img {
+  border: none;
+  flex: 0 0 28px;
+}
+.group-travel .gt-small {
+  width: auto;
+  font-size: var(--font-size-12, 12px);
+  line-height: 1.5;
+  padding: 0 0.4rem;
+}
+.group-travel .gt-saves {
+  margin: 0;
+  padding-left: 1rem;
+  font-size: var(--font-size-12, 12px);
+}
+.group-travel .gt-saves .gt-done {
+  opacity: 0.7;
+}
+.group-travel .gt-saves .gt-fail,
+.group-travel .gt-fail {
+  color: var(--color-level-error, #c33);
+  opacity: 1;
+}
+.group-travel .gt-cat summary {
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+}
+.group-travel .gt-total {
+  font-weight: bold;
+}
+.group-travel .gt-item {
+  margin: 0.2rem 0 0.2rem 0.75rem;
+}
+.group-travel .gt-item-head {
+  display: flex;
+  justify-content: space-between;
+}
+.group-travel .gt-item ul {
+  margin: 0;
+  padding-left: 0.75rem;
+  font-size: var(--font-size-12, 12px);
+}
+.group-travel .gt-item li {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.group-travel .gt-item li > span:first-child {
+  flex: 1;
+}
+.group-travel .gt-item select.gt-cond {
+  width: 7rem;
+  height: 1.4rem;
+}
+.group-travel .gt-comfort {
+  width: 100%;
+  font-size: var(--font-size-12, 12px);
+}
+.group-travel .gt-num {
+  text-align: right;
+}
+.group-travel .gt-empty {
+  opacity: 0.7;
+  font-style: italic;
+}
+
+/* Stage card */
+.group-travel.group-travel-card h3 {
+  margin: 0;
+}
+.group-travel.group-travel-card h4 {
+  margin: 0.4rem 0 0.1rem;
+  border-bottom: 1px solid var(--color-border, #999);
+}
+.group-travel.group-travel-card ul {
+  margin: 0.1rem 0;
+  padding-left: 1rem;
+}
+.group-travel.group-travel-card p {
+  margin: 0.1rem 0;
+}
+.group-travel-undone {
+  font-weight: bold;
+  color: var(--color-level-warning, #c90);
+}
+.group-travel .gt-stages {
+  table-layout: fixed;
+}
+.group-travel .gt-stages th:first-child {
+  width: 26%;
+}
+.group-travel .gt-stages th:nth-child(3) {
+  width: 16%;
+}
+.group-travel .gt-stages th:last-child {
+  width: 3rem;
+}
+.group-travel .gt-table button.icon {
+  width: 2rem;
+}
+.group-travel .gt-stages input[type="number"] {
+  width: 100%;
+}
+.group-travel.group-travel-card h3 {
+  font-size: var(--font-size-16, 16px);
+}
+.group-travel.group-travel-card h4 {
+  font-size: var(--font-size-14, 14px);
+}
