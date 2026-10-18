@@ -116,6 +116,19 @@ export function setItemCondition(item, condition) {
 /*  Stage start                                 */
 /* -------------------------------------------- */
 
+/**
+ * HTML of a table result, shown to every user: same as TableResult#getHTML but
+ * always enriched without secrets (getHTML keeps them for the GM who draws).
+ */
+async function eventHtml(result) {
+  const documentLink = result.documentToAnchor?.()?.outerHTML ?? null;
+  const description = await foundry.applications.ux.TextEditor.implementation.enrichHTML(result.description ?? "", {
+    relativeTo: result, secrets: false
+  });
+  const data = { result: { name: result.name, documentLink, description } };
+  return foundry.applications.handlebars.renderTemplate("templates/sheets/roll-table/result-details.hbs", data);
+}
+
 async function drawEvent(tableUuid) {
   if (!tableUuid) return null;
   const table = await fromUuid(tableUuid);
@@ -128,7 +141,7 @@ async function drawEvent(tableUuid) {
   if (!result) return null;
   const { effects, warnings } = readEventEffects(result.flags);
   for (const w of warnings) ui.notifications.warn(loc(w));
-  const html = await result.getHTML();
+  const html = await eventHtml(result);
   const name = result.name || String(result.description ?? "").replace(/<[^>]+>/g, "").trim() || table.name;
   return { resultUuid: result.uuid, name, html, effects, roll: roll?.total ?? null };
 }
