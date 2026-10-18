@@ -82,7 +82,14 @@ export async function restoreSnapshot(undo, entries) {
     // Camp items keep their documents: only their condition flag is restored.
     const conditions = Object.entries(undo.actors[id]?.conditions ?? {})
       .filter(([itemId, cond]) => actor.items.has(itemId) && (actor.items.get(itemId).flags?.[MODULE_ID]?.condition ?? null) !== cond)
-      .map(([itemId, cond]) => ({ _id: itemId, [`flags.${MODULE_ID}.condition`]: cond ?? _del }));
+      .map(([itemId, cond]) => {
+        if (cond !== null) return { _id: itemId, [`flags.${MODULE_ID}.condition`]: cond };
+        // No flag before: remove the condition, and the module namespace when nothing else is left in it.
+        const others = Object.keys(actor.items.get(itemId).flags?.[MODULE_ID] ?? {}).filter((k) => k !== "condition");
+        return others.length
+          ? { _id: itemId, [`flags.${MODULE_ID}.condition`]: _del }
+          : { _id: itemId, [`flags.${MODULE_ID}`]: _del };
+      });
     if (conditions.length) await actor.updateEmbeddedDocuments("Item", conditions);
   }
   return plan;

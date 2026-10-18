@@ -686,7 +686,7 @@ export function undoStage(group) {
     if (card) await markCardUndone(card);
     await group.update({
       [`flags.${MODULE_ID}.travel`]: _replace(undo.travel),
-      [`flags.${MODULE_ID}.undo`]: null
+      [`flags.${MODULE_ID}.undo`]: _del
     });
   });
 }
