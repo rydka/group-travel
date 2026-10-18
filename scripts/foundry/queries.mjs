@@ -27,18 +27,70 @@ async function getMessage(id) {
   return null;
 }
 
-/** Check a roll message sent by the user and return its outcome. */
-async function verifyRoll(messageId, user, expected, dc) {
+/**
+ * dnd5e message fields expected for the check of an action (see rolls.mjs#rollAction)
+ * or for a Constitution save.
+ * @param {"action"|"save"} kind
+ * @param {object} [action]
+ * @returns {{ type: string, system: object }}
+ */
+export function expectedRollType(kind, action) {
+  if (kind === "save") return { type: "save", system: { ability: "con" } };
+  const { type, key, ability } = action?.check ?? {};
+  if (type === "skill" && key) return { type: "check", system: { skill: key } };
+  if (type === "tool" && key) return { type: "check", system: { tool: key } };
+  return { type: "check", system: { ability: ability || "int" } };
+}
+
+/**
+ * The total of a roll recomputed from its terms, when its first term is a
+ * single kept d20 result between 1 and 20; otherwise null.
+ * @param {Roll} roll
+ * @returns {number|null}
+ */
+export function checkedTotal(roll) {
+  const d20 = roll?.terms?.[0];
+  if (!(d20 instanceof foundry.dice.terms.Die) || d20.faces !== 20) return null;
+  const results = d20.results ?? [];
+  const active = results.filter((r) => r.active);
+  if (active.length !== 1 || !results.every((r) => Number.isInteger(r.result) && r.result >= 1 && r.result <= 20)) return null;
+  try {
+    const total = Roll.safeEval(roll.terms.map((t) => t.total).join(" "));
+    return Number.isFinite(total) ? total : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Check a roll message sent by the user and return its outcome. The message
+ * must be a dnd5e roll message of this user for the expected actor and roll
+ * type, carry our flags and the expected DC, have a total consistent with its
+ * dice, and not have been used already during the stage.
+ * @param {string} messageId
+ * @param {User} user
+ * @param {{ flags: object, actorId: string, rollType: { type: string, system: object }, dc: number, used: string[] }} expected
+ */
+async function verifyRoll(messageId, user, { flags: expectedFlags, actorId, rollType, dc, used = [] }) {
+  const mismatch = () => new Error(loc(`${MODULE_ID}.Errors.rollMismatch`));
+  if (used.includes(messageId)) throw new Error(loc(`${MODULE_ID}.Errors.rollUsed`));
   const message = await getMessage(messageId);
   if (!message) throw new Error(loc(`${MODULE_ID}.Errors.rollMissing`));
   if (message.author?.id !== user.id) throw new Error(loc(`${MODULE_ID}.Errors.rollAuthor`));
   const flags = message.flags?.[MODULE_ID]?.roll ?? {};
-  for (const [k, v] of Object.entries(expected)) {
-    if (flags[k] !== v) throw new Error(loc(`${MODULE_ID}.Errors.rollMismatch`));
+  for (const [k, v] of Object.entries(expectedFlags)) {
+    if (flags[k] !== v) throw mismatch();
   }
-  const roll = message.rolls?.[0];
-  if (!roll || roll.options?.target !== dc) throw new Error(loc(`${MODULE_ID}.Errors.rollMismatch`));
-  return { success: !!roll.isSuccess, total: roll.total, messageId };
+  if (message.speaker?.actor !== actorId || message.type !== rollType.type) throw mismatch();
+  for (const [k, v] of Object.entries(rollType.system)) {
+    if (message.system?.[k] !== v) throw mismatch();
+  }
+  if (message.rolls?.length !== 1) throw mismatch();
+  const roll = message.rolls[0];
+  if (roll.options?.target !== dc) throw mismatch();
+  const total = checkedTotal(roll);
+  if (total === null || total !== roll.total) throw new Error(loc(`${MODULE_ID}.Errors.rollTotal`));
+  return { success: total >= dc, total, messageId };
 }
 
 /**
@@ -71,15 +123,20 @@ export async function handleRequest(data, { user }) {
       const choice = run?.actions?.[data.actorId];
       const action = getRules().actions.find((a) => a.id === choice?.actionId);
       if (!action) throw new Error(loc(`${MODULE_ID}.Errors.wrongPhase`));
-      const r = await verifyRoll(data.messageId, user, { groupUuid: group.uuid, runId: run.id, actorId: data.actorId, kind: "action" }, action.dc);
+      const r = await verifyRoll(data.messageId, user, {
+        flags: { groupUuid: group.uuid, runId: run.id, actorId: data.actorId, kind: "action" },
+        actorId: data.actorId, rollType: expectedRollType("action", action), dc: action.dc, used: run.usedMessages ?? []
+      });
       return service.applyActionResult(group, data.actorId, r);
     }
     case "saveResult": {
       const run = getTravel(group)?.run;
       const next = nextPendingSave(run, data.actorId);
       if (!next || next.index !== data.index) throw new Error(loc(`${MODULE_ID}.Errors.saveOrder`));
-      const r = await verifyRoll(data.messageId, user,
-        { groupUuid: group.uuid, runId: run.id, actorId: data.actorId, kind: "save", index: data.index }, next.save.dc);
+      const r = await verifyRoll(data.messageId, user, {
+        flags: { groupUuid: group.uuid, runId: run.id, actorId: data.actorId, kind: "save", index: data.index },
+        actorId: data.actorId, rollType: expectedRollType("save"), dc: next.save.dc, used: run.usedMessages ?? []
+      });
       await service.resolveSave(group, data.actorId, { index: data.index, ...r });
       return true;
     }

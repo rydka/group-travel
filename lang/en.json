@@ -99,6 +99,8 @@
       "rollMissing": "The roll message cannot be found.",
       "rollAuthor": "The roll message was not sent by you.",
       "rollMismatch": "The roll does not match the expected roll.",
+      "rollUsed": "This roll message has already been used.",
+      "rollTotal": "The total of the roll does not match its dice.",
       "notActiveGm": "This request must be sent to the active GM.",
       "noGroup": "Group not found.",
       "forbidden": "You are not allowed to do this.",

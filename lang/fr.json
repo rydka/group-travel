@@ -99,6 +99,8 @@
       "rollMissing": "Le message du jet est introuvable.",
       "rollAuthor": "Le message du jet ne vient pas de vous.",
       "rollMismatch": "Le jet ne correspond pas au jet attendu.",
+      "rollUsed": "Ce message de jet a déjà été utilisé.",
+      "rollTotal": "Le total du jet ne correspond pas à ses dés.",
       "notActiveGm": "Cette requête doit être envoyée au MJ actif.",
       "noGroup": "Groupe introuvable.",
       "forbidden": "Vous n'avez pas le droit de faire cela.",

@@ -71,6 +71,14 @@ function campTarget(group, run, uuid, entries) {
   return item;
 }
 
+/** Refuse a roll message already used during the run, then record it (on the given run object). */
+function consumeMessage(run, messageId) {
+  if (!messageId) return;
+  run.usedMessages ??= [];
+  if (run.usedMessages.includes(messageId)) throw new Error(loc(`${MODULE_ID}.Errors.rollUsed`));
+  run.usedMessages.push(messageId);
+}
+
 /** Apply a { [actorId]: { update, delete } } plan to the documents. */
 async function applyChanges(actors, changes) {
   for (const [id, c] of Object.entries(changes ?? {})) {
@@ -289,6 +297,7 @@ async function applyActionResultNow(group, actorId, { success, total = null, mes
   const choice = run?.actions?.[actorId];
   if (run?.phase !== "actions" || !choice) throw new Error(loc(`${MODULE_ID}.Errors.wrongPhase`));
   if (choice.result) throw new Error(loc(`${MODULE_ID}.Errors.actionDone`));
+  consumeMessage(run, messageId);
   const rules = getRules();
   const action = rules.actions.find((a) => a.id === choice.actionId);
   const outcome = actionOutcome(action, { success });
@@ -510,6 +519,7 @@ async function resolveSaveNow(group, actorId, { index, success, total = null, me
   if (travel.run?.phase !== "saves") throw new Error(loc(`${MODULE_ID}.Errors.wrongPhase`));
   const next = nextPendingSave(travel.run, actorId);
   if (!next || next.index !== index) throw new Error(loc(`${MODULE_ID}.Errors.saveOrder`));
+  consumeMessage(travel.run, messageId);
   const actor = game.actors.get(actorId);
   const rules = getRules();
   let result = { total, success: !!success, applied: false, messageId };
