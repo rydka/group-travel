@@ -96,6 +96,7 @@
       "notMember": "This actor is not a member of the stage.",
       "actionDone": "This member has already acted during this stage.",
       "saveOrder": "This save is not the next one of the member.",
+      "staleRun": "The stage has changed since this roll was sent.",
       "noUndo": "There is nothing to undo.",
       "rollMissing": "The roll message cannot be found.",
       "rollAuthor": "The roll message was not sent by you.",

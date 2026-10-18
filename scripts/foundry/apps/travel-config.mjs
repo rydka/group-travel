@@ -121,7 +121,7 @@ export function getTravelConfigClass() {
       this.#data = {
         exists: !!travel,
         name: travel?.name ?? "",
-        tableUuid: travel?.tableUuid ?? rules.defaultTable ?? null,
+        tableUuid: travel?.tableUuid ?? (rules.defaultTable || null),
         stages: structuredClone(travel?.stages ?? [normalizeStage({ name: "", days: 1 })]),
         tiers: structuredClone(travel?.tiers ?? rules.tiers.map((t) => ({ ...t, name: game.i18n.localize(t.name) }))),
         effects: {}

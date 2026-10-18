@@ -239,9 +239,14 @@ export function startStage(group) {
 /*  Pace and actions                            */
 /* -------------------------------------------- */
 
-/** Change the pace of the running stage (GM or group owner, through a request). */
+/**
+ * Change the pace of the running stage. Any user other than the active GM goes
+ * through the request, where the active GM checks that he is a GM or owns the group.
+ */
 export function setPace(group, pace) {
+  if (!game.user.isActiveGM) return forward("setPace", { groupUuid: group.uuid, pace });
   return serial(async () => {
+    assertGM();
     const travel = requireTravel(group);
     if (travel.run?.phase !== "actions") throw new Error(loc(`${MODULE_ID}.Errors.wrongPhase`));
     if (!PACES.includes(pace)) throw new Error(`Unknown pace ${pace}`);
@@ -251,9 +256,14 @@ export function setPace(group, pace) {
   });
 }
 
-/** Choose a member's action (owner of the member or GM, through a request). */
+/**
+ * Choose a member's action. Any user other than the active GM goes through the
+ * request, where the active GM checks that he is a GM or owns the member.
+ */
 export function chooseAction(group, actorId, { actionId, targetItemUuid = null }) {
+  if (!game.user.isActiveGM) return forward("chooseAction", { groupUuid: group.uuid, actorId, actionId, targetItemUuid });
   return serial(async () => {
+    assertGM();
     const travel = requireTravel(group);
     const run = travel.run;
     if (run?.phase !== "actions") throw new Error(loc(`${MODULE_ID}.Errors.wrongPhase`));
@@ -317,16 +327,18 @@ export function applyActionResult(group, actorId, result) {
   return serial(() => applyActionResultNow(group, actorId, result));
 }
 
-async function applyActionResultNow(group, actorId, { success, total = null, messageId = null }) {
+async function applyActionResultNow(group, actorId, { success, total = null, messageId = null, runId = null, dc = null }) {
   assertGM();
   const travel = requireTravel(group);
   const run = travel.run;
   const choice = run?.actions?.[actorId];
   if (run?.phase !== "actions" || !choice) throw new Error(loc(`${MODULE_ID}.Errors.wrongPhase`));
+  if (runId !== null && runId !== run.id) throw new Error(loc(`${MODULE_ID}.Errors.staleRun`));
   if (choice.result) throw new Error(loc(`${MODULE_ID}.Errors.actionDone`));
-  consumeMessage(run, messageId);
   const rules = getRules();
   const action = rules.actions.find((a) => a.id === choice.actionId);
+  if (dc !== null && dc !== action?.dc) throw new Error(loc(`${MODULE_ID}.Errors.rollMismatch`));
+  consumeMessage(run, messageId);
   const outcome = actionOutcome(action, { success });
   const actor = game.actors.get(actorId);
   let next = structuredClone(travel);
@@ -569,12 +581,14 @@ export function resolveSave(group, actorId, result) {
   });
 }
 
-async function resolveSaveNow(group, actorId, { index, success, total = null, messageId = null }) {
+async function resolveSaveNow(group, actorId, { index, success, total = null, messageId = null, runId = null, dc = null }) {
   assertGM();
   const travel = requireTravel(group);
   if (travel.run?.phase !== "saves") throw new Error(loc(`${MODULE_ID}.Errors.wrongPhase`));
+  if (runId !== null && runId !== travel.run.id) throw new Error(loc(`${MODULE_ID}.Errors.staleRun`));
   const next = nextPendingSave(travel.run, actorId);
   if (!next || next.index !== index) throw new Error(loc(`${MODULE_ID}.Errors.saveOrder`));
+  if (dc !== null && dc !== next.save.dc) throw new Error(loc(`${MODULE_ID}.Errors.rollMismatch`));
   consumeMessage(travel.run, messageId);
   const actor = game.actors.get(actorId);
   const rules = getRules();

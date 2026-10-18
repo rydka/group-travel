@@ -135,7 +135,7 @@ export async function handleRequest(data, { user }) {
         flags: { groupUuid: group.uuid, runId: run.id, actorId: data.actorId, kind: "action" },
         actorId: data.actorId, rollType: expectedRollType("action", action), dc: action.dc, used: run.usedMessages ?? []
       });
-      return service.applyActionResult(group, data.actorId, r);
+      return service.applyActionResult(group, data.actorId, { ...r, runId: run.id, dc: action.dc });
     }
     case "saveResult": {
       const run = getTravel(group)?.run;
@@ -145,7 +145,7 @@ export async function handleRequest(data, { user }) {
         flags: { groupUuid: group.uuid, runId: run.id, actorId: data.actorId, kind: "save", index: data.index },
         actorId: data.actorId, rollType: expectedRollType("save"), dc: next.save.dc, used: run.usedMessages ?? []
       });
-      await service.resolveSave(group, data.actorId, { index: data.index, ...r });
+      await service.resolveSave(group, data.actorId, { index: data.index, ...r, runId: run.id, dc: next.save.dc });
       return true;
     }
     // GM operations sent by a GM who is not the active GM

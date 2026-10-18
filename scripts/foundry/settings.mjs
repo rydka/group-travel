@@ -104,6 +104,12 @@ function systemSetting(key, fallback) {
   }
 }
 
+/** Water rule with at least one pint per water ration (a stored 0 or a non-number is ignored). */
+function waterRule(water) {
+  const ppwr = Math.floor(Number(water?.pintsPerWaterRation));
+  return { ...water, pintsPerWaterRation: ppwr >= 1 ? ppwr : DEFAULTS.water.pintsPerWaterRation };
+}
+
 /**
  * Every rule as a plain object, for the pure core.
  * @returns {object}
@@ -114,7 +120,7 @@ export function getRules() {
     tiers: getRule("defaultTiers"),
     actions: getRule("actions"),
     pace: getRule("pace"),
-    water: getRule("water"),
+    water: waterRule(getRule("water")),
     shortage: getRule("shortage"),
     recognition: getRule("recognition"),
     officialRules: getRule("officialRules"),

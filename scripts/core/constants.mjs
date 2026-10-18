@@ -84,7 +84,7 @@ export const DEFAULTS = Object.freeze({
   // Official rules. Privation is optional and off by default (user answer Q2).
   officialRules: { forcedMarch: true, privation: false },
   fatigueSave: true,
-  defaultTable: "Compendium.group-travel.travel-events.RollTable.groupTravelEvt01"
+  defaultTable: ""
 });
 
 /** Deep copy of a default value, safe to mutate. */

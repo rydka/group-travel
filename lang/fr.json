@@ -96,6 +96,7 @@
       "notMember": "Cet acteur ne fait pas partie de l'étape.",
       "actionDone": "Ce membre a déjà agi pendant cette étape.",
       "saveOrder": "Ce jet n'est pas le prochain jet du membre.",
+      "staleRun": "L'étape a changé depuis l'envoi de ce jet.",
       "noUndo": "Il n'y a rien à annuler.",
       "rollMissing": "Le message du jet est introuvable.",
       "rollAuthor": "Le message du jet ne vient pas de vous.",
