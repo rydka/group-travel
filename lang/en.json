@@ -103,6 +103,7 @@
       "noGroup": "Group not found.",
       "forbidden": "You are not allowed to do this.",
       "noQuery": "You are not allowed to send requests to the GM (QUERY_USER permission).",
+      "badTarget": "The repair target must be a camp item held by a member of the stage or by the group.",
       "travel": {
         "name": "Give the travel a name.",
         "stages": "Add at least one stage.",

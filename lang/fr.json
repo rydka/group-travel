@@ -103,6 +103,7 @@
       "noGroup": "Groupe introuvable.",
       "forbidden": "Vous n'avez pas le droit de faire cela.",
       "noQuery": "Vous n'avez pas le droit d'envoyer des requêtes au MJ (permission QUERY_USER).",
+      "badTarget": "La cible de la réparation doit être un objet de camp porté par un membre de l'étape ou par le groupe.",
       "travel": {
         "name": "Donnez un nom au voyage.",
         "stages": "Ajoutez au moins une étape.",

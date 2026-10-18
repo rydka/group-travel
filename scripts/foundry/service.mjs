@@ -50,6 +50,27 @@ async function writeTravel(group, travel, extra = {}) {
   await group.update({ [`flags.${MODULE_ID}.travel`]: _replace(travel), ...extra });
 }
 
+/**
+ * The camp item a repair may target: an item of a world actor that is a member
+ * of the run or the group itself, recognised as a camp item (not food or water).
+ * @param {Actor} group
+ * @param {object} run
+ * @param {string} uuid
+ * @param {object[]} entries
+ * @returns {Item}
+ */
+function campTarget(group, run, uuid, entries) {
+  const fail = () => new Error(loc(`${MODULE_ID}.Errors.badTarget`));
+  let item;
+  try { item = fromUuidSync(uuid); } catch { item = null; }
+  const holder = item?.documentName === "Item" ? item.parent : null;
+  if (!holder || holder.documentName !== "Actor" || game.actors.get(holder.id) !== holder) throw fail();
+  if (holder.id !== group.id && !run.members.includes(holder.id)) throw fail();
+  const category = classifyItem(item, entries)?.category;
+  if (!category || category === "food" || category === "water") throw fail();
+  return item;
+}
+
 /** Apply a { [actorId]: { update, delete } } plan to the documents. */
 async function applyChanges(actors, changes) {
   for (const [id, c] of Object.entries(changes ?? {})) {
@@ -204,7 +225,9 @@ export function chooseAction(group, actorId, { actionId, targetItemUuid = null }
     if (run?.phase !== "actions") throw new Error(loc(`${MODULE_ID}.Errors.wrongPhase`));
     if (!run.members.includes(actorId)) throw new Error(loc(`${MODULE_ID}.Errors.notMember`));
     if (run.actions?.[actorId]?.result) throw new Error(loc(`${MODULE_ID}.Errors.actionDone`));
-    if (actionId && !getRules().actions.some((a) => a.id === actionId)) throw new Error(`Unknown action ${actionId}`);
+    const rules = getRules();
+    if (actionId && !rules.actions.some((a) => a.id === actionId)) throw new Error(`Unknown action ${actionId}`);
+    if (actionId && targetItemUuid) campTarget(group, run, targetItemUuid, rules.recognition);
     let next;
     if (!actionId) {
       next = structuredClone(travel);
@@ -236,6 +259,17 @@ async function addProvisions(actor, kind, amount, { rules, runId }) {
   foundry.utils.setProperty(data, `flags.${MODULE_ID}.created`, { runId });
   const [created] = await actor.createEmbeddedDocuments("Item", [data]);
   return created?.uuid ?? null;
+}
+
+/** Make sure the undo snapshot of the run holds the condition of a camp item before it changes. */
+async function keepConditionInSnapshot(group, run, item) {
+  const undo = getUndo(group);
+  if (!undo || undo.runId !== run.id) return;
+  const holderId = item.parent.id;
+  if (Object.hasOwn(undo.actors?.[holderId]?.conditions ?? {}, item.id)) return;
+  await group.update({
+    [`flags.${MODULE_ID}.undo.actors.${holderId}.conditions.${item.id}`]: item.flags?.[MODULE_ID]?.condition ?? null
+  });
 }
 
 /**
@@ -275,8 +309,9 @@ async function applyActionResultNow(group, actorId, { success, total = null, mes
         break;
       }
       case "repair": {
-        const item = choice.targetItemUuid ? await fromUuid(choice.targetItemUuid) : null;
+        const item = choice.targetItemUuid ? campTarget(group, run, choice.targetItemUuid, rules.recognition) : null;
         if (item) {
+          await keepConditionInSnapshot(group, run, item);
           const to = stepCondition(itemCondition(item), outcome.steps);
           await item.update({ [`flags.${MODULE_ID}.condition`]: to });
           detail = `${item.name} → ${loc(`${MODULE_ID}.Condition.${to}`)}`;
