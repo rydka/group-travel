@@ -189,7 +189,6 @@ test("C10, C11, C11b, C12: closure consumes, queues the saves, applies failures 
     const api = game.modules.get("group-travel").api;
     const group = game.actors.get(id);
     await api.startStage(group);
-    await api.setPace(group, "normal"); // blank characters make dnd5e propose the slow pace
     await api.closeStage(group); // no autoRoll: inspect the queue first
     const run = group.getFlag("group-travel", "travel").run;
     const queue = run.saves[map.alba].map((s) => ({ kind: s.kind, day: s.day, dc: s.dc }));

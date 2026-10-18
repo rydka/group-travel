@@ -133,6 +133,13 @@ describe("canDo (C14)", () => {
     expect(canDo("setPace", ctx({ ownsGroup: true, gmOnline: false }))).toBe(false);
   });
 
+  it("applying an action or a save result is GM-only, even for the owner of the actor", () => {
+    for (const op of ["applyActionResult", "resolveSave"]) {
+      expect(canDo(op, ctx({ ownsActor: true, ownsGroup: true }))).toBe(false);
+      expect(canDo(op, ctx({ isGM: true }))).toBe(true);
+    }
+  });
+
   it("an unknown operation is refused", () => {
     expect(canDo("hack", ctx({ isGM: true }))).toBe(false);
   });
