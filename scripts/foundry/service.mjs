@@ -14,7 +14,7 @@ import {
   recordActionResult, recordSave, setAction, setPace as coreSetPace, startRun
 } from "../core/stage.mjs";
 import { getRules } from "./settings.mjs";
-import { getTravel, getUndo, maxExhaustion, readHolders, readMemberState } from "./read.mjs";
+import { getTravel, getUndo, groupPace, maxExhaustion, readHolders, readMemberState } from "./read.mjs";
 import { computeGroupState, stateFromRead } from "./state.mjs";
 import { captureSnapshot, restoreSnapshot } from "./snapshot.mjs";
 import { rollSave } from "./rolls.mjs";
@@ -204,11 +204,6 @@ async function drawEvent(tableUuid) {
   return { resultUuid: result.uuid, name, html, effects, roll: roll?.total ?? null };
 }
 
-function defaultPace(group) {
-  const pace = group.system.getTravelPace?.().pace?.value;
-  return PACES.includes(pace) ? pace : "normal";
-}
-
 /** Start the current stage (GM): snapshot, event draw, phase "actions". */
 export function startStage(group) {
   if (isOtherGM()) return forward("startStage", { groupUuid: group.uuid });
@@ -220,7 +215,7 @@ export function startStage(group) {
     if (!stage) throw new Error(loc(`${MODULE_ID}.Errors.noStage`));
     const rules = getRules();
     const ids = (group.system.creatures ?? []).map((a) => a.id);
-    const pace = defaultPace(group);
+    const pace = groupPace(group, PACES);
     const runId = foundry.utils.randomID();
     const undo = captureSnapshot(group, ids, { runId, travel, entries: rules.recognition });
     const event = await drawEvent(travel.tableUuid);

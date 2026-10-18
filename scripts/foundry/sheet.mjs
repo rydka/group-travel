@@ -5,7 +5,7 @@ import { canDo } from "../core/rights.mjs";
 import { currentStage, nextPendingSave } from "../core/stage.mjs";
 import { effectiveDays, stageDc } from "../core/pace.mjs";
 import { getRules, isEnabled } from "./settings.mjs";
-import { getTravel, getUndo } from "./read.mjs";
+import { getTravel, getUndo, groupPace } from "./read.mjs";
 import { computeGroupState } from "./state.mjs";
 
 export const TAB_TEMPLATE = `modules/${MODULE_ID}/templates/travel-tab.hbs`;
@@ -129,7 +129,7 @@ export function buildTravelContext(group) {
 
   const tierName = state.tier ? loc(state.tier.name) : "—";
   const stage = currentStage(travel);
-  const paceForPreview = run?.pace ?? group.system.getTravelPace?.().pace?.value ?? "normal";
+  const paceForPreview = run?.pace ?? groupPace(group, PACES);
   const dcPreview = state.tier ? stageDc({ stageDc: stage?.dc ?? null, tierDc: state.tier.dc, pace: paceForPreview, paceRules: rules.pace }) : null;
   const autonomy = state.autonomy;
   const ctx = {

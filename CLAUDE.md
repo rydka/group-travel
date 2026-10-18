@@ -78,6 +78,7 @@ Autres choix de mise en œuvre :
 - L'onglet n'a qu'un gabarit (pas de partiels).
 - La carte d'étape est committée avec le service (D4), qui l'appelle.
 - dnd5e remet `disabled = false` sur tout `.always-interactive` : les contrôles indisponibles ne sont pas affichés plutôt que désactivés.
+- Allure proposée au lancement : « normale ». L'allure de dnd5e (`getTravelPace()`, qui ralentit le groupe si un membre est ralenti, ce qui est le cas de personnages vierges) ne s'applique que si une allure autre que « normale » a été réglée sur la fiche du groupe (`read.mjs#groupPace`).
 - L'état d'un objet de camp sans flag est restauré en supprimant le flag (`_del`), et l'espace de noms `group-travel` s'il ne contient rien d'autre, pour que les données soient identiques après l'annulation (M5). Le drapeau `undo` est supprimé de même après l'annulation.
 
 ## Points de contact avec d'autres modules

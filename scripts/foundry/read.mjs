@@ -72,6 +72,22 @@ export function statusEffectIds() {
   return { exhaustion: id("exhaustion"), malnutrition: id("malnutrition"), dehydration: id("dehydration") };
 }
 
+/**
+ * Pace proposed at stage start: "normal", unless a pace was set on the group
+ * sheet (stored pace other than the dnd5e default "normal"); then the pace of
+ * dnd5e getTravelPace() (which slows the group down for slowed members).
+ * Blank characters count as slowed, so getTravelPace() alone would propose "slow".
+ * @param {Actor} group
+ * @param {string[]} paces   Known paces.
+ * @returns {string}
+ */
+export function groupPace(group, paces) {
+  const stored = group?._source?.system?.attributes?.travel?.pace;
+  if (!stored || stored === "normal") return "normal";
+  const pace = group.system.getTravelPace?.().pace?.value ?? stored;
+  return paces.includes(pace) ? pace : "normal";
+}
+
 /** Maximum exhaustion level of the system. */
 export function maxExhaustion() {
   return CONFIG.DND5E?.conditionTypes?.exhaustion?.levels ?? 6;
