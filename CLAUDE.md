@@ -89,7 +89,7 @@ Liste maintenue par le développeur et lue par le vérificateur : hooks écouté
 | `dnd5e.applications.actor.GroupActorSheet.PARTS.travel` et `.TABS` (statiques, modifiés à `init`) | Ajout d'une part et d'un onglet `travel` (condition : réglage `enabled`). Aucune méthode remplacée ; fiches de véhicule et de rencontre non touchées. |
 | Hook `dnd5e.prepareSheetContext` | `context.travel` pour la part `travel` seulement |
 | Hook `renderGroupActorSheet` | Écouteurs délégués `click` / `change` sur `[data-application-part="travel"]` (`stopPropagation` sur `change`) |
-| `CONFIG.queries["group-travel.request"]` | Requête joueur → MJ actif (pas de socket) |
+| `CONFIG.queries["group-travel.request"]` | Requête joueur → MJ actif (pas de socket). Un MJ non actif y envoie aussi ses opérations : seul le MJ actif (`isActiveGM`) écrit. |
 | États dnd5e `exhaustion`, `malnutrition`, `dehydration` | `actor.toggleStatusEffect` ; restaurés à l'identique à l'annulation |
 | Objets des membres et du groupe | Mises à jour, suppressions et créations (consommation, chasse, annulation avec `keepId`) ; flags `group-travel.condition`, `group-travel.created` |
 | Compendiums dnd5e lus | `dnd5e.items` (rations 2014), `dnd5e.equipment24` (rations et eau en pinte 2024) |

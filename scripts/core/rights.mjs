@@ -1,6 +1,8 @@
 // Who may do what (C14). The active GM is the only writer.
 
-const GM_ONLY = new Set(["configure", "startStage", "closeStage", "undoStage", "setItemCondition", "rollPending"]);
+const GM_ONLY = new Set([
+  "configure", "startStage", "closeStage", "undoStage", "setItemCondition", "rollPending", "applyActionResult", "resolveSave"
+]);
 
 /**
  * @param {string} op

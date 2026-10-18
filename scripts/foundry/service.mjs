@@ -36,8 +36,18 @@ export function serial(fn) {
   return result;
 }
 
+/** The active GM is the only writer. */
 function assertGM() {
-  if (!game.user.isGM) throw new Error(loc(`${MODULE_ID}.Errors.gmOnly`));
+  if (!game.user.isActiveGM) throw new Error(loc(`${MODULE_ID}.Errors.gmOnly`));
+}
+
+/** A GM who is not the active GM: his operations go to the active GM through the request. */
+const isOtherGM = () => game.user.isGM && !game.user.isActiveGM;
+
+/** Send an operation to the active GM (the queries module imports this one: lazy import). */
+async function forward(op, data) {
+  const { request } = await import("./queries.mjs");
+  return request(op, data);
 }
 
 function requireTravel(group) {
@@ -109,6 +119,7 @@ function sameRunningStage(before, after) {
  * @param {{ name, tableUuid, tiers, stages }} data
  */
 export function saveTravel(group, data) {
+  if (isOtherGM()) return forward("saveTravel", { groupUuid: group.uuid, travel: data });
   return serial(async () => {
     assertGM();
     const existing = getTravel(group);
@@ -138,6 +149,7 @@ export function saveTravel(group, data) {
 
 /** Delete the travel of a group (GM). */
 export function deleteTravel(group) {
+  if (isOtherGM()) return forward("deleteTravel", { groupUuid: group.uuid });
   return serial(async () => {
     assertGM();
     await group.update({ [`flags.${MODULE_ID}.travel`]: null, [`flags.${MODULE_ID}.undo`]: null });
@@ -146,6 +158,7 @@ export function deleteTravel(group) {
 
 /** Set the condition of a camp item (GM). */
 export function setItemCondition(item, condition) {
+  if (isOtherGM()) return forward("setItemCondition", { itemUuid: item.uuid, condition });
   return serial(async () => {
     assertGM();
     if (!CONDITIONS.includes(condition)) throw new Error(`Unknown condition ${condition}`);
@@ -194,6 +207,7 @@ function defaultPace(group) {
 
 /** Start the current stage (GM): snapshot, event draw, phase "actions". */
 export function startStage(group) {
+  if (isOtherGM()) return forward("startStage", { groupUuid: group.uuid });
   return serial(async () => {
     assertGM();
     const travel = requireTravel(group);
@@ -299,6 +313,7 @@ async function keepConditionInSnapshot(group, run, item) {
  * @param {{ success: boolean, total: number|null, messageId?: string }} result
  */
 export function applyActionResult(group, actorId, result) {
+  if (isOtherGM()) return forward("applyActionResult", { groupUuid: group.uuid, actorId, result });
   return serial(() => applyActionResultNow(group, actorId, result));
 }
 
@@ -366,6 +381,7 @@ async function applyActionResultNow(group, actorId, { success, total = null, mes
  * @param {{ autoRoll?: boolean }} [options]
  */
 export function closeStage(group, { autoRoll = false } = {}) {
+  if (isOtherGM()) return forward("closeStage", { groupUuid: group.uuid, autoRoll });
   return serial(async () => {
     await closeStageNow(group);
     if (autoRoll) await rollPendingNow(group, null);
@@ -546,6 +562,7 @@ async function advance(group, actorId) {
  * next roll is allowed (2024 exhaustion penalty, R2).
  */
 export function resolveSave(group, actorId, result) {
+  if (isOtherGM()) return forward("resolveSave", { groupUuid: group.uuid, actorId, result });
   return serial(async () => {
     await resolveSaveNow(group, actorId, result);
     return maybeFinalize(group);
@@ -570,6 +587,7 @@ async function resolveSaveNow(group, actorId, { index, success, total = null, me
 
 /** Roll every pending save (GM), for all members or the given ones, without chat messages. */
 export function rollPending(group, { actorIds = null } = {}) {
+  if (isOtherGM()) return forward("rollPending", { groupUuid: group.uuid, actorIds });
   return serial(async () => {
     await rollPendingNow(group, actorIds);
     return maybeFinalize(group);
@@ -642,6 +660,7 @@ async function maybeFinalize(group) {
 
 /** Undo the last stage started (GM), during the stage or after its closure. */
 export function undoStage(group) {
+  if (isOtherGM()) return forward("undoStage", { groupUuid: group.uuid });
   return serial(async () => {
     assertGM();
     const undo = getUndo(group);

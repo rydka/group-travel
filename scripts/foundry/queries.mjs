@@ -100,6 +100,13 @@ async function verifyRoll(messageId, user, { flags: expectedFlags, actorId, roll
  */
 export async function handleRequest(data, { user }) {
   if (!game.user.isActiveGM) throw new Error(loc(`${MODULE_ID}.Errors.notActiveGm`));
+  if (data.op === "setItemCondition") {
+    if (!user.isGM) throw new Error(loc(`${MODULE_ID}.Errors.forbidden`));
+    const item = await fromUuid(data.itemUuid);
+    if (item?.documentName !== "Item") throw new Error(loc(`${MODULE_ID}.Errors.forbidden`));
+    await service.setItemCondition(item, data.condition);
+    return true;
+  }
   const group = await fromUuid(data.groupUuid);
   if (group?.type !== "group") throw new Error(loc(`${MODULE_ID}.Errors.noGroup`));
   const actor = data.actorId ? game.actors.get(data.actorId) : null;
@@ -108,7 +115,8 @@ export async function handleRequest(data, { user }) {
     ownsGroup: group.testUserPermission(user, "OWNER"),
     ownsActor: !!actor?.testUserPermission(user, "OWNER")
   };
-  const op = { actionResult: "chooseAction", saveResult: "chooseAction" }[data.op] ?? data.op;
+  const op = { actionResult: "chooseAction", saveResult: "chooseAction", saveTravel: "configure", deleteTravel: "configure" }[data.op]
+    ?? data.op;
   if (!canDo(op, ctx)) throw new Error(loc(`${MODULE_ID}.Errors.forbidden`));
 
   switch (data.op) {
@@ -140,6 +148,25 @@ export async function handleRequest(data, { user }) {
       await service.resolveSave(group, data.actorId, { index: data.index, ...r });
       return true;
     }
+    // GM operations sent by a GM who is not the active GM
+    case "saveTravel":
+      return service.saveTravel(group, data.travel ?? {});
+    case "deleteTravel":
+      await service.deleteTravel(group);
+      return true;
+    case "startStage":
+      return service.startStage(group);
+    case "closeStage":
+      return service.closeStage(group, { autoRoll: !!data.autoRoll });
+    case "rollPending":
+      return service.rollPending(group, { actorIds: Array.isArray(data.actorIds) ? data.actorIds : null });
+    case "applyActionResult":
+      return service.applyActionResult(group, data.actorId, data.result ?? {});
+    case "resolveSave":
+      return service.resolveSave(group, data.actorId, data.result ?? {});
+    case "undoStage":
+      await service.undoStage(group);
+      return true;
     default:
       throw new Error(loc(`${MODULE_ID}.Errors.forbidden`));
   }
