@@ -89,14 +89,18 @@ function consumeMessage(run, messageId) {
   run.usedMessages.push(messageId);
 }
 
-/** Apply a { [actorId]: { update, delete } } plan to the documents. */
+/**
+ * Apply a { [actorId]: { update, delete } } plan (one per actor, see
+ * mergeChanges) to the documents: one grouped write per actor, actors in parallel.
+ */
 async function applyChanges(actors, changes) {
-  for (const [id, c] of Object.entries(changes ?? {})) {
+  await forEachParallel(Object.keys(changes ?? {}), async (id) => {
+    const c = changes[id];
     const actor = actors.get(id) ?? game.actors.get(id);
-    if (!actor) continue;
+    if (!actor) return;
     if (c.update?.length) await actor.updateEmbeddedDocuments("Item", c.update);
     if (c.delete?.length) await actor.deleteEmbeddedDocuments("Item", c.delete);
-  }
+  });
 }
 
 /* -------------------------------------------- */
@@ -395,9 +399,9 @@ async function applyActionResultNow(group, actorId, { success, total = null, mes
 export function closeStage(group, { autoRoll = false } = {}) {
   if (isOtherGM()) return forward("closeStage", { groupUuid: group.uuid, autoRoll });
   return serial(async () => {
-    await closeStageNow(group);
-    if (autoRoll) await rollPendingNow(group, null);
-    return maybeFinalize(group);
+    let travel = await closeStageNow(group);
+    if (autoRoll) travel = await rollPendingNow(group, null, travel);
+    return maybeFinalize(group, travel);
   });
 }
 
@@ -512,17 +516,18 @@ async function closeStageNow(group) {
     comfortAfter: state.comfort.score, tier: tier ? { id: tier.id, name: tier.name, dc: tier.dc } : null
   };
 
-  // 5. Write: documents, travel, automatic levels (no roll). Any error restores
-  // the documents and the travel as they were before the closure.
+  // 5. Write: documents, automatic levels (no roll), then the travel once. Any
+  // error restores the documents and the travel as they were before the closure.
   const guard = captureSnapshot(group, ids, { runId: run.id, travel: original, entries });
   try {
     await applyChanges(read.actors, mergeChanges(...plans));
+    await forEachParallel(ids, (id) => advanceQueue(run, id, rules));
     await writeTravel(group, travel);
-    for (const id of ids) await advance(group, id);
   } catch (err) {
     await rollbackClosure(group, guard, entries);
     throw err;
   }
+  return travel;
 }
 
 /** Restore the documents and the travel as they were before a failed closure. */
@@ -547,26 +552,47 @@ async function applyFailure(actor, save, rules) {
   return { applied: add > 0, levels: add, before: beforeLevel, after };
 }
 
-/** Resolve automatic entries of a member's queue, until a roll is needed. */
-async function advance(group, actorId) {
-  const rules = getRules();
+/**
+ * Resolve the queue of a member in order, on the given run (changed in place,
+ * written by the caller): automatic levels, skipped saves (missing actor,
+ * maximum exhaustion) and, with `roll`, the rolled saves. Stops at the first
+ * save that needs a roll when `roll` is not given. A failure is applied before
+ * the next save is rolled (2024 exhaustion penalty, R2).
+ * @param {object} run
+ * @param {string} actorId
+ * @param {object} rules
+ * @param {(actor: Actor, save: object) => Promise<D20Roll|null>} [roll]
+ */
+async function advanceQueue(run, actorId, rules, roll = null) {
+  const saves = run.saves?.[actorId] ?? [];
+  const actor = game.actors.get(actorId);
   for (;;) {
-    const travel = getTravel(group);
-    const next = nextPendingSave(travel?.run, actorId);
-    if (!next) return;
-    const actor = game.actors.get(actorId);
+    const index = saves.findIndex((s) => !s.result);
+    if (index < 0) return;
+    const save = saves[index];
     let result = null;
     if (!actor) result = { total: null, success: null, applied: false, skipped: "missing" };
     else if (!rules.disableExhaustion && (Number(actor.system.attributes?.exhaustion) || 0) >= maxExhaustion()) {
       result = { total: null, success: null, applied: false, skipped: "max" };
-    } else if (next.save.auto) {
-      result = { total: null, success: false, ...(await applyFailure(actor, next.save, rules)) };
+    } else if (save.auto) {
+      result = { total: null, success: false, ...(await applyFailure(actor, save, rules)) };
     }
-    if (!result) return;
-    result.status = !result.success && !result.skipped ? next.save.status ?? null : null;
-    travel.run = recordSave(travel.run, actorId, next.index, result);
-    await writeTravel(group, travel);
+    if (result) result.status = !result.success && !result.skipped ? save.status ?? null : null;
+    else if (roll) {
+      const r = await roll(actor, save);
+      if (!r) return;
+      result = { total: r.total, success: !!r.isSuccess, applied: false, messageId: null };
+      if (!result.success) result = { ...result, ...(await applyFailure(actor, save, rules)), status: save.status ?? null };
+    } else return;
+    saves[index] = { ...save, result };
   }
+}
+
+/** Run a task for every id in parallel; every task ends before the first error is thrown. */
+async function forEachParallel(ids, task) {
+  const results = await Promise.allSettled(ids.map((id) => task(id)));
+  const failed = results.find((r) => r.status === "rejected");
+  if (failed) throw failed.reason;
 }
 
 /**
@@ -575,10 +601,7 @@ async function advance(group, actorId) {
  */
 export function resolveSave(group, actorId, result) {
   if (isOtherGM()) return forward("resolveSave", { groupUuid: group.uuid, actorId, result });
-  return serial(async () => {
-    await resolveSaveNow(group, actorId, result);
-    return maybeFinalize(group);
-  });
+  return serial(async () => maybeFinalize(group, await resolveSaveNow(group, actorId, result)));
 }
 
 async function resolveSaveNow(group, actorId, { index, success, total = null, messageId = null, runId = null, dc = null }) {
@@ -595,34 +618,41 @@ async function resolveSaveNow(group, actorId, { index, success, total = null, me
   let result = { total, success: !!success, applied: false, messageId };
   if (!success && actor) result = { ...result, ...(await applyFailure(actor, next.save, rules)), status: next.save.status ?? null };
   travel.run = recordSave(travel.run, actorId, index, result);
-  await writeTravel(group, travel);
-  await advance(group, actorId);
+  try {
+    await advanceQueue(travel.run, actorId, rules);
+  } finally {
+    await writeTravel(group, travel);
+  }
+  return travel;
 }
 
 /** Roll every pending save (GM), for all members or the given ones, without chat messages. */
 export function rollPending(group, { actorIds = null } = {}) {
   if (isOtherGM()) return forward("rollPending", { groupUuid: group.uuid, actorIds });
-  return serial(async () => {
-    await rollPendingNow(group, actorIds);
-    return maybeFinalize(group);
-  });
+  return serial(async () => maybeFinalize(group, await rollPendingNow(group, actorIds)));
 }
 
-async function rollPendingNow(group, actorIds) {
+/**
+ * Members are independent: their queues are rolled in parallel, each one in
+ * order. The travel is written once at the end.
+ * @param {Actor} group
+ * @param {string[]|null} actorIds
+ * @param {object} [current]   The travel when the caller has just written it.
+ * @returns {Promise<object>} The travel.
+ */
+async function rollPendingNow(group, actorIds, current = null) {
   assertGM();
-  const travel = requireTravel(group);
-  if (travel.run?.phase !== "saves") return;
-  const ids = actorIds ?? travel.run.members;
-  for (const id of ids) {
-    const actor = game.actors.get(id);
-    for (;;) {
-      const next = nextPendingSave(getTravel(group)?.run, id);
-      if (!next || !actor) break;
-      const { roll } = await rollSave(actor, next.save, { create: false, configure: false });
-      if (!roll) break;
-      await resolveSaveNow(group, id, { index: next.index, success: roll.isSuccess, total: roll.total });
-    }
+  const travel = current ?? requireTravel(group);
+  if (travel.run?.phase !== "saves") return travel;
+  const rules = getRules();
+  const ids = (actorIds ?? travel.run.members).filter((id) => travel.run.saves?.[id]);
+  const roll = async (actor, save) => (await rollSave(actor, save, { create: false, configure: false })).roll;
+  try {
+    await forEachParallel(ids, (id) => advanceQueue(travel.run, id, rules, roll));
+  } finally {
+    await writeTravel(group, travel);
   }
+  return travel;
 }
 
 /** Final privation states of a member, walking the days in order. */
@@ -638,27 +668,32 @@ function finalStates(info, saves) {
   return state;
 }
 
-/** When every queue is resolved: privation states, chat card, next stage. */
-async function maybeFinalize(group) {
-  const travel = getTravel(group);
+/**
+ * When every queue is resolved: privation states, chat card, next stage.
+ * @param {Actor} group
+ * @param {object} [current]   The travel when the caller has just written it.
+ */
+async function maybeFinalize(group, current = null) {
+  const travel = current ?? getTravel(group);
   const run = travel?.run;
   if (run?.phase !== "saves" || !isRunComplete(run)) return travel;
   const rules = getRules();
   const statuses = {};
   if (rules.officialRules.privation) {
-    for (const id of run.members) {
+    await forEachParallel(run.members, async (id) => {
       const actor = game.actors.get(id);
       const info = run.memberInfo?.[id];
-      if (!actor || !info) continue;
+      if (!actor || !info) return;
       const final = finalStates(info, run.saves[id] ?? []);
       const now = readMemberState(actor);
       for (const k of ["malnutrition", "dehydration"]) {
         if (final[k] !== now[k]) await actor.toggleStatusEffect(k, { active: final[k] });
       }
       statuses[id] = final;
-    }
+    });
   }
-  const message = await postStageCard(group, travel, statuses);
+  const ordered = Object.fromEntries(run.members.filter((id) => statuses[id]).map((id) => [id, statuses[id]]));
+  const message = await postStageCard(group, travel, ordered);
   const stage = travel.stages.find((s) => s.id === run.stageId);
   const next = finishRun(travel, {
     cardId: message?.id ?? null, stageName: stage?.name ?? "",
