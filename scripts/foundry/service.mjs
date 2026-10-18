@@ -4,18 +4,18 @@
 import { CONDITIONS, MODULE_ID, PACES, stepCondition } from "../core/constants.mjs";
 import { classifyItem } from "../core/recognition.mjs";
 import { aggregateInventory, itemCondition } from "../core/inventory.mjs";
-import { planConsumption, planRemoval } from "../core/consumption.mjs";
+import { applyChangesToHolders, mergeChanges, planConsumption, planRemoval } from "../core/consumption.mjs";
 import { planEvent, readEventEffects } from "../core/events.mjs";
 import { actionOutcome } from "../core/actions.mjs";
 import { dailyPrivation } from "../core/privation.mjs";
 import { effectiveDays, stageDc } from "../core/pace.mjs";
 import {
-  buildSaveQueue, createTravel as coreCreateTravel, currentStage, finishRun, isRunComplete, nextPendingSave, recordActionResult,
-  recordSave, setAction, setPace as coreSetPace, startRun
+  buildSaveQueue, createTravel as coreCreateTravel, currentStage, finishRun, isRunComplete, nextPendingSave, normalizeStage,
+  recordActionResult, recordSave, setAction, setPace as coreSetPace, startRun
 } from "../core/stage.mjs";
 import { getRules } from "./settings.mjs";
 import { getTravel, getUndo, maxExhaustion, readHolders, readMemberState } from "./read.mjs";
-import { computeGroupState } from "./state.mjs";
+import { computeGroupState, stateFromRead } from "./state.mjs";
 import { captureSnapshot, restoreSnapshot } from "./snapshot.mjs";
 import { rollSave } from "./rolls.mjs";
 import { postStageCard, markCardUndone } from "./chat.mjs";
@@ -93,9 +93,18 @@ async function applyChanges(actors, changes) {
 /*  Travel                                      */
 /* -------------------------------------------- */
 
+/** The running stage keeps its place and its content in the new stage list. */
+function sameRunningStage(before, after) {
+  const i = before.current;
+  const old = before.stages[i];
+  const now = after.stages[i];
+  return !!old && !!now && old.id === before.run.stageId
+    && JSON.stringify(normalizeStage(old)) === JSON.stringify(normalizeStage(now));
+}
+
 /**
  * Create or replace the travel of a group (GM). Only one travel per group:
- * an unfinished travel with a stage in progress cannot be replaced.
+ * while a stage is in progress, that stage can be neither removed nor changed.
  * @param {Actor} group
  * @param {{ name, tableUuid, tiers, stages }} data
  */
@@ -109,7 +118,10 @@ export function saveTravel(group, data) {
       travel.name = data.name ?? travel.name;
       travel.tableUuid = data.tableUuid ?? null;
       if (data.tiers) travel.tiers = structuredClone(data.tiers);
-      if (data.stages) travel.stages = coreCreateTravel({ stages: data.stages }).stages;
+      if (data.stages) {
+        travel.stages = coreCreateTravel({ stages: data.stages }).stages;
+        if (travel.run && !sameRunningStage(existing, travel)) throw new Error(loc(`${MODULE_ID}.Errors.stageLocked`));
+      }
       if (!travel.run) {
         travel.current = Math.min(travel.current, travel.stages.length);
         travel.status = travel.current >= travel.stages.length ? (travel.history.length ? "finished" : "planning")
@@ -363,60 +375,69 @@ export function closeStage(group, { autoRoll = false } = {}) {
 
 async function closeStageNow(group) {
   assertGM();
-  const travel = structuredClone(requireTravel(group));
+  const original = requireTravel(group);
+  const travel = structuredClone(original);
   const run = travel.run;
   if (run?.phase !== "actions") throw new Error(loc(`${MODULE_ID}.Errors.wrongPhase`));
+  const stage = travel.stages.find((s) => s.id === run.stageId);
+  if (!stage) throw new Error(loc(`${MODULE_ID}.Errors.noStage`));
   const rules = getRules();
   const entries = rules.recognition;
   const ppwr = rules.water.pintsPerWaterRation;
-  const stage = travel.stages.find((s) => s.id === run.stageId);
   const ids = run.members.filter((id) => game.actors.get(id));
 
-  // Exhaustion and states before the closure (card, final states)
+  // Everything is planned on plain data before anything is written.
   const before = Object.fromEntries(ids.map((id) => [id, readMemberState(game.actors.get(id))]));
+  const read = readHolders(group, ids);
+  let holders = read.holders;
+  const plans = [];
+  const step = (changes) => {
+    plans.push(changes);
+    holders = applyChangesToHolders(holders, changes);
+  };
 
   // 1. Event effects
-  let read = readHolders(group, ids);
   const eventPlan = planEvent(run.event?.effects ?? [], {
-    inventory: aggregateInventory(read.holders, entries), guarded: !!run.guarded,
+    inventory: aggregateInventory(holders, entries), guarded: !!run.guarded,
     pintsPerWaterRation: ppwr, label: run.event?.name ?? ""
   });
   const lost = { food: 0, water: 0 };
   if (eventPlan.losses.food) {
-    const { changes, removed } = planRemoval(read.holders, "food", eventPlan.losses.food, entries);
-    await applyChanges(read.actors, changes);
+    const { changes, removed } = planRemoval(holders, "food", eventPlan.losses.food, entries);
+    step(changes);
     lost.food = removed;
   }
   if (eventPlan.losses.waterPints) {
-    read = readHolders(group, ids);
-    const { changes, removed } = planRemoval(read.holders, "water", eventPlan.losses.waterPints, entries);
-    await applyChanges(read.actors, changes);
+    const { changes, removed } = planRemoval(holders, "water", eventPlan.losses.waterPints, entries);
+    step(changes);
     lost.water = removed / ppwr;
   }
   const damaged = [];
+  const conditionChanges = {};
   for (const c of eventPlan.conditionChanges) {
-    const item = c.itemId ? game.actors.get(c.holderId)?.items.get(c.itemId) : null;
+    const item = c.itemId ? read.actors.get(c.holderId)?.items.get(c.itemId) : null;
     if (!item) continue;
-    await item.update({ [`flags.${MODULE_ID}.condition`]: c.to });
+    (conditionChanges[c.holderId] ??= { update: [] }).update.push({ _id: c.itemId, [`flags.${MODULE_ID}.condition`]: c.to });
     damaged.push(`${item.name}: ${loc(`${MODULE_ID}.Condition.${c.from}`)} → ${loc(`${MODULE_ID}.Condition.${c.to}`)}`);
   }
+  step(conditionChanges);
   run.comfortMods.push(...eventPlan.comfortMods);
   run.eventResult = { guarded: !!run.guarded, lost, damaged, comfort: eventPlan.comfortMods.map((m) => m.value) };
 
   // 2. Consumption: group first, then the member's own sheet
-  read = readHolders(group, ids);
+  const members = holders.filter((h) => h.kind === "member");
   const consumption = planConsumption({
-    members: read.members, group: read.group, days: run.effectiveDays,
+    members, group: holders.find((h) => h.kind === "group"), days: run.effectiveDays,
     foodPerDay: stage.foodPerDay, waterPerDay: stage.waterPerDay, pintsPerWaterRation: ppwr, entries
   });
-  await applyChanges(read.actors, consumption.changes);
+  step(consumption.changes);
   const groupShortage = {
     food: Object.values(consumption.shortage).some((s) => s.food),
     water: Object.values(consumption.shortage).some((s) => s.water)
   };
 
   // 3. Comfort after and tier
-  const state = computeGroupState(group, { rules, travel, ids, mods: run.comfortMods, shortage: groupShortage });
+  const state = stateFromRead({ members, holders }, { rules, travel, mods: run.comfortMods, shortage: groupShortage });
   const tier = state.tier;
 
   // 4. Save queues
@@ -462,10 +483,28 @@ async function closeStageNow(group) {
     groupShortage, foodPerDay: stage.foodPerDay, waterPerDay: stage.waterPerDay,
     comfortAfter: state.comfort.score, tier: tier ? { id: tier.id, name: tier.name, dc: tier.dc } : null
   };
-  await writeTravel(group, travel);
 
-  // 5. Automatic levels (no roll)
-  for (const id of ids) await advance(group, id);
+  // 5. Write: documents, travel, automatic levels (no roll). Any error restores
+  // the documents and the travel as they were before the closure.
+  const guard = captureSnapshot(group, ids, { runId: run.id, travel: original, entries });
+  try {
+    await applyChanges(read.actors, mergeChanges(...plans));
+    await writeTravel(group, travel);
+    for (const id of ids) await advance(group, id);
+  } catch (err) {
+    await rollbackClosure(group, guard, entries);
+    throw err;
+  }
+}
+
+/** Restore the documents and the travel as they were before a failed closure. */
+async function rollbackClosure(group, guard, entries) {
+  try {
+    await restoreSnapshot(guard, entries);
+    await writeTravel(group, guard.travel);
+  } catch (err) {
+    console.error(`${MODULE_ID} | closure rollback failed`, err);
+  }
 }
 
 /** Apply a failed save or an automatic level to a member. */

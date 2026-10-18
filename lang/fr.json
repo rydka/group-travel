@@ -90,6 +90,7 @@
       "gmOnly": "Seul un MJ peut faire cela.",
       "noTravel": "Ce groupe n'a pas de voyage.",
       "stageRunning": "Une étape est déjà en cours.",
+      "stageLocked": "L'étape en cours ne peut être ni supprimée ni modifiée avant sa clôture.",
       "noStage": "Il ne reste aucune étape.",
       "wrongPhase": "Ce n'est pas possible à ce moment de l'étape.",
       "notMember": "Cet acteur ne fait pas partie de l'étape.",

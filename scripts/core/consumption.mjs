@@ -137,3 +137,56 @@ export function planConsumption({
   if (group) toChanges([groupFood, groupWater], changes);
   return { changes, intake, shortage };
 }
+
+/** Set a flattened update key ("system.uses.spent") on a plain object copy. */
+function setPath(target, key, value) {
+  const parts = key.split(".");
+  let o = target;
+  for (const p of parts.slice(0, -1)) o = (o[p] = o[p] && typeof o[p] === "object" ? { ...o[p] } : {});
+  o[parts.at(-1)] = value;
+}
+
+/**
+ * Plain holders after a { [holderId]: { update, delete } } plan, without
+ * touching the inputs. Used to plan several steps before writing anything.
+ * @param {{ id: string, items: object[] }[]} holders
+ * @param {Record<string, { update?: object[], delete?: string[] }>} changes
+ * @returns {object[]}
+ */
+export function applyChangesToHolders(holders, changes) {
+  return (holders ?? []).map((h) => {
+    const c = changes?.[h.id];
+    if (!c) return h;
+    const deleted = new Set(c.delete ?? []);
+    const updates = new Map((c.update ?? []).map((u) => [u._id, u]));
+    const items = h.items.filter((i) => !deleted.has(i._id)).map((i) => {
+      const u = updates.get(i._id);
+      if (!u) return i;
+      const next = { ...i, system: { ...i.system, uses: { ...i.system?.uses } }, flags: { ...i.flags } };
+      for (const [k, v] of Object.entries(u)) if (k !== "_id") setPath(next, k, v);
+      return next;
+    });
+    return { ...h, items };
+  });
+}
+
+/**
+ * Merge plans in order: later updates of an item override earlier keys, and
+ * a deleted item is not updated.
+ * @param {...Record<string, { update?: object[], delete?: string[] }>} sets
+ * @returns {Record<string, { update: object[], delete: string[] }>}
+ */
+export function mergeChanges(...sets) {
+  const out = {};
+  for (const set of sets) {
+    for (const [id, c] of Object.entries(set ?? {})) {
+      const o = (out[id] ??= { updates: new Map(), delete: new Set() });
+      for (const u of c.update ?? []) o.updates.set(u._id, { ...(o.updates.get(u._id) ?? {}), ...u });
+      for (const d of c.delete ?? []) o.delete.add(d);
+    }
+  }
+  return Object.fromEntries(Object.entries(out).map(([id, o]) => [id, {
+    update: [...o.updates.values()].filter((u) => !o.delete.has(u._id)),
+    delete: [...o.delete]
+  }]));
+}

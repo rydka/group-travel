@@ -17,7 +17,16 @@ import { readHolders } from "./read.mjs";
  * @param {{ food: boolean, water: boolean }} [options.shortage]
  */
 export function computeGroupState(group, { rules, travel = null, ids, mods = [], shortage = { food: false, water: false } }) {
-  const read = readHolders(group, ids);
+  return stateFromRead(readHolders(group, ids), { rules, travel, mods, shortage });
+}
+
+/**
+ * Same as computeGroupState, from plain holders already read (and possibly
+ * changed in memory by a plan).
+ * @param {{ members: object[], holders: object[] }} read
+ * @param {object} options   See computeGroupState.
+ */
+export function stateFromRead(read, { rules, travel = null, mods = [], shortage = { food: false, water: false } }) {
   const inventory = aggregateInventory(read.holders, rules.recognition);
   const stage = currentStage(travel);
   const autonomy = computeAutonomy({

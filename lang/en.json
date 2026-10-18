@@ -90,6 +90,7 @@
       "gmOnly": "Only a GM can do this.",
       "noTravel": "This group has no travel.",
       "stageRunning": "A stage is already in progress.",
+      "stageLocked": "The stage in progress can be neither removed nor changed until it is closed.",
       "noStage": "There is no stage left.",
       "wrongPhase": "This is not possible at this point of the stage.",
       "notMember": "This actor is not a member of the stage.",
