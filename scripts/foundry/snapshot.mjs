@@ -74,7 +74,11 @@ export async function restoreSnapshot(undo, entries) {
     if (p.updateItems.length) await actor.updateEmbeddedDocuments("Item", p.updateItems);
     if (p.deleteEffects.length) await actor.deleteEmbeddedDocuments("ActiveEffect", p.deleteEffects);
     if (p.createEffects.length) await actor.createEmbeddedDocuments("ActiveEffect", p.createEffects, { keepId: true });
-    if (p.updateEffects.length) await actor.updateEmbeddedDocuments("ActiveEffect", p.updateEffects);
+    // dnd5e conditions with levels need the level before the update (condition.mjs _onUpdate).
+    for (const update of p.updateEffects) {
+      const originalLevel = actor.effects.get(update._id)?.system?.level ?? 0;
+      await actor.updateEmbeddedDocuments("ActiveEffect", [update], { dnd5e: { originalLevel } });
+    }
     // Camp items keep their documents: only their condition flag is restored.
     const conditions = Object.entries(undo.actors[id]?.conditions ?? {})
       .filter(([itemId, cond]) => actor.items.has(itemId) && (actor.items.get(itemId).flags?.[MODULE_ID]?.condition ?? null) !== cond)
