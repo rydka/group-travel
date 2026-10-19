@@ -175,16 +175,28 @@ export function setItemCondition(item, condition) {
 /* -------------------------------------------- */
 
 /**
- * HTML of a table result, shown to every user: same as TableResult#getHTML but
- * always enriched without secrets (getHTML keeps them for the GM who draws).
+ * Description of a table result enriched without its secret blocks: this is
+ * what every user may see (TableResult#getHTML keeps the secrets for the GM
+ * who draws).
  */
-async function eventHtml(result) {
-  const documentLink = result.documentToAnchor?.()?.outerHTML ?? null;
-  const description = await foundry.applications.ux.TextEditor.implementation.enrichHTML(result.description ?? "", {
+function publicDescription(result) {
+  return foundry.applications.ux.TextEditor.implementation.enrichHTML(result.description ?? "", {
     relativeTo: result, secrets: false
   });
+}
+
+/** HTML of a table result, same as TableResult#getHTML but from the public description. */
+async function eventHtml(result, description) {
+  const documentLink = result.documentToAnchor?.()?.outerHTML ?? null;
   const data = { result: { name: result.name, documentLink, description } };
   return foundry.applications.handlebars.renderTemplate("templates/sheets/roll-table/result-details.hbs", data);
+}
+
+/** Text content of an HTML string, whitespace collapsed. */
+function textOf(html) {
+  const div = document.createElement("div");
+  div.innerHTML = html ?? "";
+  return (div.textContent ?? "").replace(/\s+/g, " ").trim();
 }
 
 async function drawEvent(tableUuid) {
@@ -199,8 +211,10 @@ async function drawEvent(tableUuid) {
   if (!result) return null;
   const { effects, warnings } = readEventEffects(result.flags);
   for (const w of warnings) ui.notifications.warn(loc(w));
-  const html = await eventHtml(result);
-  const name = result.name || String(result.description ?? "").replace(/<[^>]+>/g, "").trim() || table.name;
+  // The fallback name is shown to everyone (stage card): take it from the public description, never the raw one.
+  const description = await publicDescription(result);
+  const html = await eventHtml(result, description);
+  const name = result.name || textOf(description) || table.name;
   return { resultUuid: result.uuid, name, html, effects, roll: roll?.total ?? null };
 }
 
