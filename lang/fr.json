@@ -195,7 +195,7 @@
         "floor": "aucun (le plus bas)"
       },
       "actions": {
-        "hint": "Une action par personnage et par étape. Un test d'outil sans clé d'outil devient un test de la caractéristique indiquée.",
+        "hint": "Une action par personnage et par étape. Un test d'outil sans clé d'outil devient un test de la caractéristique indiquée. Les joueurs lancent eux-mêmes leurs tests et leurs jets de fatigue : le MJ vérifie l'auteur, le DD et les dés du message de jet, mais un joueur qui passe par la console peut encore forger un message cohérent. Si cela compte, lancez pour eux (« Lancer tous les jets en attente », ou terminez l'étape avec les jets automatiques).",
         "label": "Nom",
         "check": "Test",
         "key": "clé de compétence ou d'outil",

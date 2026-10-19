@@ -195,7 +195,7 @@
         "floor": "none (lowest)"
       },
       "actions": {
-        "hint": "One action per character and per stage. A tool check without a tool key becomes a check of the given ability.",
+        "hint": "One action per character and per stage. A tool check without a tool key becomes a check of the given ability. Players roll their own checks and fatigue saves: the GM checks the author, the DC and the dice of the roll message, but a player using the console could still forge a consistent message. If that matters, roll for them (\"Roll all pending saves\", or end the stage with automatic rolls).",
         "label": "Name",
         "check": "Check",
         "key": "skill or tool key",

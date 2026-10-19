@@ -74,7 +74,9 @@ Faites sur les instances de test 3 et 4 (`test-env/serve.mjs group-travel --inst
 
 Autres choix de mise en œuvre :
 - Les jets automatiques du MJ (« tout lancer », `closeStage({ autoRoll: true })`) ne créent pas de message ; la carte d'étape donne les totaux, sans jets joints.
-- Le message de jet d'un joueur est retrouvé par un `nonce` dans ses flags ; le MJ vérifie l'auteur, les flags et `options.target` = DD attendu.
+- Le message de jet d'un joueur est retrouvé par un `nonce` dans ses flags ; le MJ vérifie l'auteur, les flags, le `runId`, `options.target` = DD attendu, un seul jet dont le premier terme est un d20 à un seul résultat actif entre 1 et 20, le total recalculé à partir des termes, et refuse un message déjà utilisé pendant l'étape (`queries.mjs#verifyRoll`).
+- **Limite acceptée de `verifyRoll` (décision de l'utilisateur, relecture du 2026-10-18)** : le jet est prouvé par un `ChatMessage` créé par le client du joueur. Un joueur qui utilise la console peut forger un message cohérent (formule `1d20+99`, d20 choisi) ou lancer plusieurs fois à l'avance et ne soumettre que le meilleur message (pas de contrôle d'horodatage). Il ne peut réussir ainsi que **sa propre** action ou **sa propre** sauvegarde, jamais celles d'un autre. Le risque est accepté ; le MJ qui veut une certitude lance lui-même (« Lancer tous les jets en attente », clôture avec jets automatiques). Documenté dans le README et dans l'aide des actions du menu « Règles ». Ne pas « corriger » sans décision contraire.
+- Délais des requêtes (`queries.mjs`) : 15 s pour les requêtes des joueurs, 120 s (`GM_TIMEOUT`) pour les opérations qu'un MJ non actif transmet au MJ actif (`service.mjs#forward`), parce qu'une clôture avec jets automatiques met à jour chaque membre l'un après l'autre. Le délai ne fait qu'abandonner l'attente de l'appelant : le MJ actif termine l'opération.
 - L'onglet n'a qu'un gabarit (pas de partiels).
 - La carte d'étape est committée avec le service (D4), qui l'appelle.
 - dnd5e remet `disabled = false` sur tout `.always-interactive` : les contrôles indisponibles ne sont pas affichés plutôt que désactivés.
