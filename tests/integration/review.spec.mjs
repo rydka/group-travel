@@ -242,3 +242,52 @@ test("a GM who is not the active GM goes through the active GM", async ({ foundr
   expect(writes.length).toBeGreaterThan(0);
   expect(writers).toEqual([activeId]);
 });
+
+test("a result without a name does not leak its secret into the card or the tab", async ({ foundry, gamePage, browser }) => {
+  const ids = await setupGroup(foundry, { stages: [stage({ days: 1 })], table: [{ name: "x", effects: [{ type: "none" }] }] });
+  await foundry(async (id) => {
+    const group = game.actors.get(id);
+    const table = game.tables.find((t) => t.name === "GT review");
+    await table.results.contents[0].update({ name: "", description: '<p>Dust on the road</p><section class="secret"><p>TOPSECRET ambush</p></section>' });
+    const api = game.modules.get("group-travel").api;
+    await api.startStage(group);
+    await api.closeStage(group, { autoRoll: true });
+  }, ids.groupId);
+  await joinPlayer({ foundry, gamePage, browser }, ids);
+  const info = await foundry(() => {
+    const card = game.messages.find((m) => m.flags["group-travel"]?.card);
+    return { card: card?.content ?? "", eventName: null };
+  });
+  const tab = await other.page.locator('section.group-travel[data-tab="travel"]').innerHTML();
+  fs.writeFileSync(test.info().outputPath("N1-resultat-sans-nom.json"), JSON.stringify({ cardText: info.card.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ") }, null, 2));
+  expect(info.card).not.toContain("TOPSECRET");
+  expect(tab).not.toContain("TOPSECRET");
+  expect(info.card).toContain("Dust on the road");
+});
+
+test("the tab footer fits a 1160x816 window", async ({ foundry, gamePage }) => {
+  const ids = await setupGroup(foundry, { start: true });
+  await gamePage.setViewportSize({ width: 1160, height: 816 });
+  await gamePage.evaluate(async (id) => {
+    const sheet = game.actors.get(id).sheet;
+    await sheet.render({ force: true });
+    await sheet.changeTab("travel", "primary");
+  }, ids.groupId);
+  await settle(gamePage, 800);
+  const pane = gamePage.locator('section.group-travel[data-tab="travel"]');
+  await pane.locator(".gt-scroll").evaluate((el) => { el.scrollTop = el.scrollHeight; });
+  const geometry = await gamePage.evaluate(() => {
+    const vp = { w: innerWidth, h: innerHeight };
+    const box = (sel) => { const e = document.querySelector(sel); if (!e) return null; const r = e.getBoundingClientRect(); return { top: r.top, bottom: r.bottom, left: r.left, right: r.right }; };
+    const app = document.querySelector('section.group-travel[data-tab="travel"]')?.closest(".application");
+    const r = app?.getBoundingClientRect();
+    return { vp, app: r && { top: r.top, bottom: r.bottom, left: r.left, right: r.right }, close: box('[data-gt-action="close"]'), configure: box('[data-gt-action="configure"]'), undo: box('[data-gt-action="undo"]') };
+  });
+  await gamePage.screenshot({ path: test.info().outputPath("V1-pied-onglet-1160x816.png") });
+  fs.writeFileSync(test.info().outputPath("V1-geometrie.json"), JSON.stringify(geometry, null, 2));
+  expect(geometry.close).not.toBeNull();
+  expect(geometry.close.bottom).toBeLessThanOrEqual(geometry.vp.h);
+  expect(geometry.close.bottom).toBeLessThanOrEqual(geometry.app.bottom);
+  expect(geometry.app.bottom).toBeLessThanOrEqual(geometry.vp.h);
+  await gamePage.setViewportSize({ width: 1600, height: 900 });
+});
