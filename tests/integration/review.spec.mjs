@@ -188,9 +188,10 @@ test("a failed closure restores the state from before", async ({ foundry }) => {
     await new Promise((r) => setTimeout(r, 500));
     const after = window.gtT.canon(group);
     const travel = group.getFlag("group-travel", "travel");
+    const cards = game.messages.filter((m) => m.flags["group-travel"]?.card).length;
     // The stage can be closed again afterwards.
     const retry = await api.closeStage(group, { autoRoll: true }).then(() => "closed", (e) => e.message);
-    return { error, differences: window.gtT.diff(before, after), phase: travel.run?.phase, cards: game.messages.filter((m) => m.flags["group-travel"]?.card).length, retry };
+    return { error, differences: window.gtT.diff(before, after), phase: travel.run?.phase, cards, retry };
   }, { id: ids.groupId, map: ids.map });
   fs.writeFileSync(test.info().outputPath("S5-cloture-en-echec.json"), JSON.stringify(r, null, 2));
   expect(r.error).toContain("injected failure");
