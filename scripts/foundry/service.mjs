@@ -44,10 +44,13 @@ function assertGM() {
 /** A GM who is not the active GM: his operations go to the active GM through the request. */
 const isOtherGM = () => game.user.isGM && !game.user.isActiveGM;
 
-/** Send an operation to the active GM (the queries module imports this one: lazy import). */
+/**
+ * Send an operation to the active GM (the queries module imports this one: lazy
+ * import), with the long timeout: a closure with automatic rolls can be slow.
+ */
 async function forward(op, data) {
-  const { request } = await import("./queries.mjs");
-  return request(op, data);
+  const { request, GM_TIMEOUT } = await import("./queries.mjs");
+  return request(op, data, { timeout: GM_TIMEOUT });
 }
 
 function requireTravel(group) {

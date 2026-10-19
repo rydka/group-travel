@@ -9,7 +9,14 @@ import { getTravel } from "./read.mjs";
 import * as service from "./service.mjs";
 
 export const QUERY = `${MODULE_ID}.request`;
+/** Player requests: short operations (a choice, a roll result). */
 const TIMEOUT = 15000;
+/**
+ * Operations a non-active GM forwards to the active GM: closing a stage with
+ * every roll made automatically updates every member one after the other and
+ * can take well over 15 s with a large group.
+ */
+export const GM_TIMEOUT = 120000;
 const loc = (key) => game.i18n.localize(key);
 
 /** Register the query handler. Called on `init`. */
@@ -176,12 +183,15 @@ export async function handleRequest(data, { user }) {
  * Send a request to the active GM (or run it here when this user is the active GM).
  * @param {string} op
  * @param {object} data
+ * @param {object} [options]
+ * @param {number} [options.timeout=TIMEOUT]  Delay in ms before the caller gives up
+ *   (the active GM still finishes the operation).
  */
-export async function request(op, data) {
+export async function request(op, data, { timeout = TIMEOUT } = {}) {
   const payload = { op, ...data };
   if (game.user.isActiveGM) return handleRequest(payload, { user: game.user });
   const gm = game.users.activeGM;
   if (!gm) throw new Error(loc(`${MODULE_ID}.Tab.noGm`));
   if (!game.user.hasPermission("QUERY_USER")) throw new Error(loc(`${MODULE_ID}.Errors.noQuery`));
-  return gm.query(QUERY, payload, { timeout: TIMEOUT });
+  return gm.query(QUERY, payload, { timeout });
 }
