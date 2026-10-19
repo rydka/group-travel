@@ -1,4 +1,4 @@
-/* global window, User */
+/* global window, document, innerWidth, innerHeight, User */
 // Tests added after the review: secrets, repair targets, forged/reused roll
 // messages, locked running stage, all-or-nothing closure, non-active GM, default pace.
 import fs from "node:fs";
