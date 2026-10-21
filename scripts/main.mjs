@@ -1,30 +1,22 @@
-export const MODULE_ID = "group-travel";
+import { MODULE_ID } from "./core/constants.mjs";
+import { isEnabled, registerSettings } from "./foundry/settings.mjs";
+import { registerTravelTab } from "./foundry/sheet.mjs";
+import { registerQueries } from "./foundry/queries.mjs";
+import { registerApi } from "./api.mjs";
 
-/**
- * Register module settings. Called on the `init` hook.
- */
-export function registerSettings() {
-  game.settings.register(MODULE_ID, "enabled", {
-    name: `${MODULE_ID}.settings.enabled.name`,
-    hint: `${MODULE_ID}.settings.enabled.hint`,
-    scope: "world",
-    config: true,
-    type: Boolean,
-    default: true
-  });
-}
-
-export function isEnabled() {
-  return game.settings.get(MODULE_ID, "enabled");
-}
+export { MODULE_ID, isEnabled, registerSettings };
 
 Hooks.once("init", () => {
   registerSettings();
+  // The sheet, queries and API need the real Foundry and dnd5e (absent from unit tests).
+  if (globalThis.dnd5e?.applications?.actor?.GroupActorSheet) registerTravelTab();
+  if (globalThis.CONFIG?.queries) registerQueries();
+  registerApi();
 });
 
 Hooks.once("ready", () => {
   if (game.system.id !== "dnd5e") {
-    ui.notifications.error(game.i18n.localize(`${MODULE_ID}.errors.wrongSystem`));
+    ui.notifications.error(game.i18n.localize(`${MODULE_ID}.Errors.wrongSystem`));
     return;
   }
   console.log(`${MODULE_ID} | ready`);

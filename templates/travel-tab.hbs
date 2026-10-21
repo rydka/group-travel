@@ -1,0 +1,180 @@
+<section class="tab group-travel gt-tab {{tab.cssClass}}" data-tab="travel" data-group="primary">
+{{#with travel as |t|}}
+  {{#if t.error}}
+  <p class="gt-error">{{t.error}}</p>
+  {{else}}
+  {{!-- Fixed header: travel, stage, tier, autonomy --}}
+  <header class="gt-head">
+    <div class="gt-title">
+      {{#if t.travel}}
+      <strong>{{t.travel.name}}</strong>
+      <span class="gt-sub">{{#if t.travel.finished}}{{localize "group-travel.Tab.finished"}}{{else}}{{localize "group-travel.Tab.stageOf" n=t.travel.stageNumber total=t.travel.stageCount}}{{/if}}</span>
+      {{else}}
+      <strong>{{localize "group-travel.Tab.noTravel"}}</strong>
+      {{/if}}
+    </div>
+    <div class="gt-badges">
+      <span class="gt-badge gt-tier" data-tooltip="{{localize "group-travel.Tab.tierHint"}}">
+        <i class="fa-solid fa-campground" inert></i> {{t.tier.name}} · {{localize "group-travel.Tab.comfort"}} {{t.comfort.score}}
+      </span>
+      {{#if t.fatigueSave}}
+      <span class="gt-badge" data-tooltip="{{localize "group-travel.Tab.houseRule"}}">{{localize "group-travel.Tab.fatigueDc" dc=t.fatigueDc}} <em>({{localize "group-travel.Tab.houseRuleShort"}})</em></span>
+      {{/if}}
+      <span class="gt-badge" data-tooltip="{{localize "group-travel.Tab.autonomyHint"}}">
+        <i class="fa-solid fa-utensils" inert></i> {{t.autonomy.foodDays}}
+        <i class="fa-solid fa-droplet" inert></i> {{t.autonomy.waterDays}}
+        → {{localize "group-travel.Tab.days" n=t.autonomy.days}}
+      </span>
+    </div>
+    {{#if t.noGm}}<p class="gt-warning"><i class="fa-solid fa-triangle-exclamation" inert></i> {{t.noGmText}}</p>{{/if}}
+  </header>
+
+  <div class="gt-scroll">
+    {{#if t.noMembers}}<p class="gt-empty">{{localize "group-travel.Tab.noMembers"}}</p>{{/if}}
+
+    {{!-- Running stage --}}
+    {{#if t.run}}
+    <section class="gt-block gt-run">
+      <h3>{{t.run.stageName}} <span class="gt-sub">{{t.run.phaseLabel}}</span></h3>
+      <div class="gt-line">
+        <label>{{localize "group-travel.Run.pace"}}</label>
+        {{#if t.run.canPace}}
+        <select class="always-interactive" data-gt-change="pace">{{selectOptions t.run.paceOptions selected=t.run.pace}}</select>
+        {{else}}<span>{{t.run.paceLabel}}</span>{{/if}}
+        <span>{{localize "group-travel.Run.days" n=t.run.effectiveDays}}</span>
+      </div>
+      {{#if t.run.event}}
+      <div class="gt-event">
+        <div class="gt-event-text"><i class="fa-solid fa-dice" inert></i> {{#if t.run.event.html}}{{{t.run.event.html}}}{{else}}<strong>{{t.run.event.name}}</strong>{{/if}}</div>
+        {{#if t.run.event.effects.length}}<ul>{{#each t.run.event.effects}}<li>{{this}}</li>{{/each}}</ul>{{/if}}
+        {{#if t.run.event.guarded}}<p class="gt-ok"><i class="fa-solid fa-shield" inert></i> {{localize "group-travel.Run.guarded"}}</p>{{/if}}
+      </div>
+      {{else}}<p class="gt-empty">{{localize "group-travel.Run.noEvent"}}</p>{{/if}}
+
+      <table class="gt-members">
+        <thead><tr>
+          <th>{{localize "group-travel.Run.member"}}</th>
+          <th>{{localize "group-travel.Run.action"}}</th>
+          <th>{{localize "group-travel.Run.saves"}}</th>
+        </tr></thead>
+        <tbody>
+        {{#each t.run.members as |m|}}
+          <tr data-actor-id="{{m.id}}">
+            <td class="gt-member">
+              <img src="{{m.img}}" alt="" width="28" height="28">
+              <span>{{m.name}}</span>
+              <span class="gt-sub" data-tooltip="{{localize "group-travel.Run.exhaustion"}}"><i class="fa-solid fa-bed" inert></i> {{m.exhaustion}}</span>
+            </td>
+            <td>
+              {{#if m.canChoose}}
+              <select class="always-interactive" data-gt-change="chooseAction" data-actor-id="{{m.id}}">
+                <option value="">—</option>
+                {{selectOptions t.run.actionOptions selected=m.choiceId}}
+              </select>
+              {{#if m.needsTarget}}
+              <select class="always-interactive" data-gt-change="chooseTarget" data-actor-id="{{m.id}}" data-action-id="{{m.choiceId}}">
+                <option value="">{{localize "group-travel.Run.chooseItem"}}</option>
+                {{#each m.targets as |o|}}<option value="{{o.uuid}}" {{#if (eq o.uuid m.targetUuid)}}selected{{/if}}>{{o.label}}</option>{{/each}}
+              </select>
+              {{/if}}
+              {{#if m.canRollAction}}
+              <button type="button" class="always-interactive gt-small" data-gt-action="rollAction" data-actor-id="{{m.id}}">
+                <i class="fa-solid fa-dice-d20" inert></i> {{localize "group-travel.Run.roll"}} ({{localize "group-travel.Run.dc" dc=m.actionDc}})</button>
+              {{/if}}
+              {{else}}
+              <span>{{m.actionLabel}}</span>
+              {{#if m.actionResult}}<span class="gt-sub">{{m.actionResult}}</span>{{/if}}
+              {{/if}}
+            </td>
+            <td>
+              {{#if m.dcText}}<div class="gt-sub">{{m.dcText}}</div>{{/if}}
+              <ul class="gt-saves">
+                {{#each m.saves as |s|}}
+                <li class="{{#if s.done}}gt-done{{/if}} {{#if s.failed}}gt-fail{{/if}}">
+                  {{s.label}}{{#if s.dc}} · {{localize "group-travel.Run.dc" dc=s.dc}}{{/if}}{{#if s.auto}} · {{localize "group-travel.Save.auto"}}{{/if}}
+                  {{#if s.result}} — {{s.result}}{{/if}}
+                </li>
+                {{/each}}
+              </ul>
+              {{#if m.canRollSave}}
+              <button type="button" class="always-interactive gt-small" data-gt-action="rollSave" data-actor-id="{{m.id}}" data-index="{{m.nextSaveIndex}}">
+                <i class="fa-solid fa-dice-d20" inert></i> {{localize "group-travel.Run.rollSave"}}</button>
+              {{/if}}
+            </td>
+          </tr>
+        {{/each}}
+        </tbody>
+      </table>
+    </section>
+    {{else if t.stage}}
+    <section class="gt-block">
+      <h3>{{localize "group-travel.Tab.nextStage"}} : {{t.stage.name}}</h3>
+      <p>{{t.stage.infoText}}</p>
+    </section>
+    {{/if}}
+
+    {{!-- Inventory --}}
+    <section class="gt-block">
+      <h3>{{localize "group-travel.Tab.inventory"}} <span class="gt-sub">{{localize "group-travel.Tab.members" n=t.memberCount}}</span></h3>
+      {{#each t.inventory as |c|}}
+      <details class="gt-cat" {{#unless c.empty}}open{{/unless}}>
+        <summary><span>{{c.label}}</span><span class="gt-total">{{c.totalText}}</span></summary>
+        {{#if c.empty}}<p class="gt-empty">{{localize "group-travel.Tab.none"}}</p>{{/if}}
+        {{#each c.rows as |r|}}
+        <div class="gt-item">
+          <div class="gt-item-head"><span>{{r.name}}</span><span class="gt-total">{{r.totalText}}</span></div>
+          <ul>
+            {{#each r.holders as |h|}}
+            <li>
+              <span>{{h.name}}</span><span>{{h.amountText}}</span>
+              {{#if h.camp}}
+                {{#if h.editable}}
+                <select class="always-interactive gt-cond" data-gt-change="condition" data-uuid="{{h.uuid}}">{{selectOptions t.conditionOptions selected=h.condition}}</select>
+                {{else}}<span class="gt-cond gt-{{h.condition}}">{{h.conditionLabel}}</span>{{/if}}
+              {{/if}}
+            </li>
+            {{/each}}
+          </ul>
+        </div>
+        {{/each}}
+      </details>
+      {{/each}}
+    </section>
+
+    {{!-- Comfort --}}
+    <section class="gt-block">
+      <h3>{{localize "group-travel.Tab.comfort"}} : {{t.comfort.score}} → {{t.tier.name}} <span class="gt-sub">({{localize "group-travel.Tab.houseRuleShort"}})</span></h3>
+      <table class="gt-comfort">
+        {{#each t.comfort.lines as |l|}}
+        <tr><td>{{l.name}}</td><td>{{l.rarityValue}} × {{l.factor}} ({{l.conditionLabel}}) × {{l.quantity}}</td><td class="gt-num">{{l.value}}</td></tr>
+        {{/each}}
+        {{#each t.comfort.modLines as |m|}}
+        <tr><td>{{m.label}}</td><td></td><td class="gt-num">{{m.value}}</td></tr>
+        {{/each}}
+        {{#if t.comfort.malus}}
+        <tr><td>{{localize "group-travel.Tab.shortageMalus"}}</td><td></td><td class="gt-num">-{{t.comfort.malus}}</td></tr>
+        {{/if}}
+      </table>
+    </section>
+
+    {{#if t.history.length}}
+    <section class="gt-block">
+      <h3>{{localize "group-travel.Tab.history"}}</h3>
+      <ul>{{#each t.history as |h|}}<li>{{h.name}}{{#if h.tier}} · {{h.tier}} ({{h.comfort}}){{/if}}</li>{{/each}}</ul>
+    </section>
+    {{/if}}
+  </div>
+
+  {{!-- GM bar --}}
+  {{#if t.isGM}}
+  <footer class="gt-gm-bar">
+    <button type="button" class="always-interactive" data-gt-action="configure"><i class="fa-solid fa-gear" inert></i> {{localize "group-travel.GM.configure"}}</button>
+    {{#if t.gm.start}}<button type="button" class="always-interactive" data-gt-action="start"><i class="fa-solid fa-play" inert></i> {{localize "group-travel.GM.start"}}</button>{{/if}}
+    {{#if t.gm.close}}<button type="button" class="always-interactive" data-gt-action="close"><i class="fa-solid fa-flag-checkered" inert></i> {{localize "group-travel.GM.close"}}</button>{{/if}}
+    {{#if t.gm.rollAll}}<button type="button" class="always-interactive" data-gt-action="rollAll"><i class="fa-solid fa-dice" inert></i> {{localize "group-travel.GM.rollAll"}}</button>{{/if}}
+    {{#if t.gm.undo}}<button type="button" class="always-interactive" data-gt-action="undo"><i class="fa-solid fa-rotate-left" inert></i> {{localize "group-travel.GM.undo"}}</button>{{/if}}
+  </footer>
+  {{/if}}
+  {{/if}}
+{{/with}}
+</section>

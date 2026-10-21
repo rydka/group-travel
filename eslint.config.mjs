@@ -13,7 +13,10 @@ const foundryGlobals = {
   fromUuid: "readonly",
   fromUuidSync: "readonly",
   ChatMessage: "readonly",
-  Roll: "readonly"
+  Roll: "readonly",
+  RollTable: "readonly",
+  _replace: "readonly",
+  _del: "readonly"
 };
 
 export default [
@@ -27,7 +30,7 @@ export default [
     }
   },
   {
-    files: ["tests/**/*.{js,mjs}", "*.config.mjs"],
+    files: ["tests/**/*.{js,mjs}", "*.config.mjs", ".atelier/**/*.mjs"],
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "module",
